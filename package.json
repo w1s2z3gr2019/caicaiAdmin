@@ -1,0 +1,50 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "homepage": ".",
+  "dependencies": {
+    "antd": "^3.13.5",
+    "bmap": "^1.0.1",
+    "css-loader": "^2.1.0",
+    "customize-cra": "^0.2.11",
+    "del": "^3.0.0",
+    "echarts": "^3.8.5",
+    "echarts-for-react": "^2.0.15-beta.0",
+    "electron-packager": "^13.0.1",
+    "jquery": "3.1.1",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "react": "^16.8.2",
+    "react-app-rewired": "^2.1.0",
+    "react-dom": "^16.8.2",
+    "react-highlight-words": "^0.16.0",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^2.1.5",
+    "request": "^2.88.0"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "node bin/clean.js && react-app-rewired build --color",
+    "test": "react-app-rewired test --env=jsdom",
+    "estart": "electron .",
+    "packageAll": "node bin/exeClean.js && electron-packager . YiKaTong login --all --out ./dist --electron-version 4.0.0",
+    "packageTest": "node bin/exeClean.js && electron-packager . YiKaTong login --platform=win32 --arch=ia32 --icon=./admin.ico --out ./dist --arch=ia32 --asar --ignore=./huashi_dll --download.mirror=https://npm.taobao.org/mirrors/electron/ --max-old-space-size=4096 --electron-version 2.0.18 ",
+    "package_ok": "node bin/exeClean.js && electron-packager . 猜彩 login --platform=win32 --icon=./admin.ico --arch=ia32 --asar --ignore=./configure --extra-resource=./configure --out ./dist  --electron-version 2.0.18"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "babel-plugin-import": "^1.11.0",
+    "electron": "^2.0.4"
+  }
+}

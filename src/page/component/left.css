@@ -1,0 +1,50 @@
+.logoSvg{
+    width: 100%;
+    height: 80px;
+    padding-left: 24px;
+    line-height: 90px;
+    overflow: hidden;
+}
+#content{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+.acc-content .conWrap{
+    box-sizing: border-box;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 0 20px #0c2646;
+    height: 100%;
+    border-radius: 4px;
+}
+.logoSvg .useIcon{
+    color: #fff;
+    font-size: 30px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+.logoSvg .signOut{
+    color: #fff;
+
+}
+.logoSvg span{
+    color: #fff;
+}
+
+.menuExit a,.menuExit span{
+    color: #333;
+    cursor: pointer;
+}
+.menuExit a:hover,.menuExit span:hover{
+    color: #ff4d4f
+}
+.menuWrap .passLoading{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 99999;
+}
+

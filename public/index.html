@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon " type="images/x-icon" href="../admin.ico">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>猜彩后台管理</title>
+</head>
+<script>
+    try {
+        const path = require('path');  
+        const fs = require('fs');
+        var iopath = path.join(__dirname, '../configure/configure.txt');
+        if(~iopath.indexOf('app.asar')){
+            var dll_t = iopath.split('app.asar');
+            iopath=dll_t[0]+'configure/configure.txt';
+        }else {
+            if(~iopath.indexOf('node_modules')){
+                var dll_path = iopath.split('node_modules');
+                iopath=dll_path[0]+'configure/configure.txt';
+            }
+        }
+        fs.readFile(iopath,function(error,data_file){
+            if(error){
+                console.log(error);
+                return;
+            };
+            var config_data = data_file.toString();
+            var config_arr = config_data.split('\n');
+            for(var i = 0;i<config_arr.length;i++){
+                if(~(config_arr[i].indexOf('url='))){
+                    var path = config_arr[i].replace('url=','');
+                    var path_url = path.trim();
+                    console.log(path_url)
+                    window.url=path_url;
+                    break;
+                }
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        window.globalConfig={
+            context:'http://192.168.1.211:8080/AIID/port'
+        }
+    }
+</script>
+<body>
+    <div id="root"></div>
+</body>
+</html>
