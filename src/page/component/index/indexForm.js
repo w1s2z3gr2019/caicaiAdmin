@@ -5,7 +5,7 @@ import $ from 'jquery/src/ajax';
 import {luckDrawType,topic,cycle,sponsorData} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 import './index.less';
-import {PicturesWall} from '../picture/picture';
+import CropBlock from '../crop/cropBlock';
 
 let id = 0;
 const { TextArea } = Input;
@@ -239,11 +239,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                     labelCol={{ span: 4 }}
                                     wrapperCol={{ span: 18 }}
                                     label="主题图片" >
-                                    <PicturesWall
-                                        pictureSign="achievement_technical_picture"
-                                        fileList={(e)=>{this.setState({technicalPictureUrl:e})}}
-                                        pictureUrl={this.state.technicalPictureUrl} />
-                                    <p>图片建议:要高清。</p>
+                                    <CropBlock number = {5} aspectRatio = {2/1} url = '/manage/manager/upload.do' idValue="imgLoad1" uploadData = {{"type": 'item'}} urlArr = {[]} />
                                 </Form.Item>
                             </div>
                             {this.state.luckType!==3?<div className="clearBoth">
@@ -307,11 +303,14 @@ export default Form.create()(class IndexForm extends React.Component {
                                     labelCol={{ span: 4 }}
                                     wrapperCol={{ span: 18 }}
                                     label="奖品图片" >
-                                    <PicturesWall
-                                        pictureSign="achievement_technical_picture"
-                                        fileList={(e)=>{this.setState({technicalPictureUrl:e})}}
-                                        pictureUrl={this.state.technicalPictureUrl} />
-                                    <p>图片建议:要高清。</p>
+                                    <CropBlock 
+                                    number = {1} 
+                                    aspectRatio = {2/1} 
+                                    idValue="imgLoad2" 
+                                    url = '/manage/manager/upload.do' 
+                                    uploadData = {{"type": 'item'}} 
+                                    urlArr = {[]} 
+                                    />
                                 </Form.Item>
                             </div>
                             <div className="clearBoth"> 

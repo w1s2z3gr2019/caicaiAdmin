@@ -1,0 +1,15 @@
+@charset 'utf-8';
+
+
+.crop-input input{
+	position: fixed;
+	top: -100px;
+	left: -200px;
+	visibility: hidden;
+}
+.crop-box-content{
+	text-align: center;
+}
+.crop-area>div{
+	margin: 0 auto;
+}

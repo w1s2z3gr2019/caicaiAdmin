@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button,Input,Table,Spin,Icon,message,Tooltip} from 'antd';
+import {Button,Input,Table,Spin,Icon,message} from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import AccountForm from './accountForm.js';
@@ -224,6 +224,7 @@ export class Account extends React.Component {
             <div className="wrapContent">
                 <Spin tip="数据加载中,请稍候..." spinning={this.state.loading}>
                     <div className="user-search">
+                   
                         <Input placeholder="账号" 
                             className="inpWin"
                             value={this.state.mobile}
