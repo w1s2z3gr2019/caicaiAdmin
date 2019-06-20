@@ -5,7 +5,8 @@ import {Module} from './module/module';
 import {User} from './user/user';
 import {Complaint} from './complaint/complaint';
 import {Problem} from './problem/problem';
-import {Account} from './system/account/account'
+import {Account} from './system/account/account';
+import {Naming} from './naming/naming';
 import './left.css';
 
 export class ContentAdmin extends React.Component {
@@ -23,6 +24,7 @@ export class ContentAdmin extends React.Component {
               <Route path='/page/complaint' component={Complaint}/>
               <Route path='/page/problem' component={Problem}/>
               <Route path='/page/account' component={Account}/>
+              <Route path='/page/naming' component={Naming}/>
             </div>
         </div>
       )

@@ -129,6 +129,21 @@ export class LeftMenu extends React.Component {
                             </Menu.Item>
                         </SubMenu>
                         <SubMenu
+                            key="sub4"
+                            title={
+                                <span>
+                                    <Icon type="build" />
+                                    <span>营销系统</span>
+                                </span>
+                            }
+                        >
+                            <Menu.Item key="4">
+                                <NavLink to='/page/naming' replace>
+                                    <span>冠名设置</span>
+                                </NavLink>
+                            </Menu.Item>
+                        </SubMenu>
+                        <SubMenu
                             key="sub3"
                             title={
                                 <span>
