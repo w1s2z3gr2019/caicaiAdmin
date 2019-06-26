@@ -2,15 +2,15 @@ import React from 'react';
 import {Button,Input,Table,Spin,Icon,message,Tooltip,Select} from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import IndexForm from './indexForm.js';
+import LotteryForm from './lotteryForm.js';
 import {dataTool} from '../../../tools.js';
 import {luckDrawType,topic,cycle} from '../../../dataDic'
-import './index.less'
+import '../index/index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
  //默认时间
 
-export class Index extends React.Component {
+export class Lottery extends React.Component {
     constructor(props){
         super(props);
         this.state = { 
@@ -259,16 +259,9 @@ export class Index extends React.Component {
                                 })
                             }
                         </Select>
-                        <Select className="inpWin" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}}  placeholder="发布状态" >
-                            { 
-                                cycle.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                })
-                            }
-                        </Select>
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
-                        <div style={{float:'right',margin:'10px 0',overflow:'hidden'}}>
+                        <div style={{float:'right'}}>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >发布</Button>
                             <Button type="danger" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >撤回</Button>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
@@ -289,7 +282,7 @@ export class Index extends React.Component {
                             />
                     </div>
                 </Spin>
-                <IndexForm 
+                <LotteryForm 
                     visible={this.state.visibleForm}
                     callbackPass={this.callbackPass}
                     data={this.state.theData}

@@ -99,7 +99,12 @@ export class LeftMenu extends React.Component {
                             >
                             <Menu.Item key="1">
                                 <NavLink to='/page/index' replace>
-                                    <span>发布话题</span>
+                                    <span>话题管理</span>
+                                </NavLink>
+                            </Menu.Item>
+                            <Menu.Item key="2">
+                                <NavLink to='/page/lottery' replace>
+                                    <span>开奖管理</span>
                                 </NavLink>
                             </Menu.Item>
                         </SubMenu>
@@ -152,7 +157,7 @@ export class LeftMenu extends React.Component {
                                 </span>
                             }
                         >
-                            <Menu.Item key="4">
+                            <Menu.Item key="5">
                                 <NavLink to='/page/account' replace>
                                     <span>账号管理</span>
                                 </NavLink>
