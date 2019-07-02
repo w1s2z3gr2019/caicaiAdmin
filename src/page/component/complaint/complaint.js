@@ -74,16 +74,12 @@ export class Complaint extends React.Component {
         $.ajax({
             method: "post",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
+            url: window.url + "/api/admin/complaintSuggestionsList",
+            data: {
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
+                title:this.state.title
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
-                token:locaData.token,
-                signature:111,
-            }),
             success: function (data) {
                 let theArr = data.result,arrData=[];
                 if(data.state!==200){
@@ -146,8 +142,7 @@ export class Complaint extends React.Component {
         }
     }
     reset=()=>{
-        this.state.mobile='';
-        this.state.visitorName='';
+        this.state.title='';
         this.loadData();
     }
     //搜索
@@ -171,7 +166,7 @@ export class Complaint extends React.Component {
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+        this.loadData();
     }
     componentDidUpdate(){
        
@@ -197,8 +192,8 @@ export class Complaint extends React.Component {
                     <div className="user-search">
                         <Input placeholder="投诉人" 
                             className="inpWin"
-                            value={this.state.mobile}
-                            onChange={(e) => { this.setState({ mobile: e.target.value }); }} />
+                            value={this.state.title}
+                            onChange={(e) => { this.setState({ title: e.target.value }); }} />
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                     </div>

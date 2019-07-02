@@ -59,13 +59,13 @@ export class Naming extends React.Component {
             headers: {
                 "Content-Type": "application/json;charset=UTF-8"
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
-                token:locaData.token,
-                signature:111,
-            }),
+            url: window.url + "/api/admin/topicSponsorshipList",
+            data: {
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
+                token:locaData.token
+               
+            },
             success: function (data) {
                 let theArr = data.result,arrData=[];
                 if(data.state!==200){

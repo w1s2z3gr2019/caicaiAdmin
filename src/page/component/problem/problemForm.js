@@ -1,8 +1,8 @@
 import React from 'react';
-import {Form,Button,Modal, message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
+import {Form,Button,Modal, message,Spin,Input } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import {luckDrawType,topic,cycle,sponsorData} from '../../../dataDic.js';
+import {} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 
 let id = 0;
@@ -25,7 +25,7 @@ export default Form.create()(class ProblemForm extends React.Component {
             visible:true
         })
     }
-    handleSubmit=(e)=>{
+    handleSubmit=(e,status)=>{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             console.log(values)
@@ -33,17 +33,18 @@ export default Form.create()(class ProblemForm extends React.Component {
                 this.setState({
                     loading:true
                 })
+                let api = this.props.data.id?'/api/admin/updateCommonProblem':'/api/admin/addCommonProblem'
                 $.ajax({
                     type: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
                     dataType: "json",
-                    url: window.url+'/visitWindows/visitorCheckin' ,
-                    data: JSON.stringify({
-                        token:this.state.token,
-                        signature:111,
-                    }),
+                    url: window.url+api ,
+                    data: {
+                        id:this.props.data.id,
+                        status:status,   //0-草稿 1-发布
+                        title:values.title,
+                        content:values.content,
+                        token:this.state.token
+                    },
                     success:function(data){
                         if (data.state!==200) {
                             message.warning(data.msg);
@@ -95,14 +96,14 @@ export default Form.create()(class ProblemForm extends React.Component {
         return (
           <div> 
                 <Modal
-                    title={!theData.activeId?'常见问题创建':'常见问题修改'}
+                    title={!theData.id?'常见问题创建':'常见问题修改'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
                     width='600px'
                 >
-                <Form  layout="horizontal" onSubmit={this.handleSubmit.bind(this)}>
+                <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
                             <div className="clearBoth"> 
                                 <Form.Item
@@ -126,22 +127,29 @@ export default Form.create()(class ProblemForm extends React.Component {
                                     labelCol={{span:4}}
                                     label="内容"
                                 >
-                                    {getFieldDecorator('title', {
+                                    {getFieldDecorator('content', {
                                         rules: [{
                                             required: true, message: '请编辑内容',
                                         }],
-                                        initialValue: theData.title
+                                        initialValue: theData.content
                                     })(
-                                        <TextArea rows={4} placeholder="内容"/>
+                                        <TextArea rows={4}  placeholder="内容"/>
                                     )}
                                 </Form.Item>
                             </div>
                             <div className="clearBoth">
-                                <Form.Item  
-                                    wrapperCol={{ span: 18,offset:4 }}>
+                                <Form.Item wrapperCol={{ span: 18,offset:4 }}>
                                     <Button
                                         className="marginR_20"
                                         type="primary"
+                                        onClick={(e)=>{this.handleSubmit(e,0)}}
+                                    >
+                                        草稿
+                                    </Button>
+                                    <Button
+                                        className="marginR_20"
+                                        type="primary"
+                                        onClick={(e)=>{this.handleSubmit(e,1)}}
                                         htmlType="submit"
                                     >
                                         发布

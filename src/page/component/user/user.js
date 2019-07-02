@@ -101,21 +101,19 @@ export class User extends React.Component {
             page:pageNo,
             loading: true
         });
-       
-
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
             headers: {
                 "Content-Type": "application/json;charset=UTF-8"
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
+            url: window.url + "/api/admin/selectUser",
+            data:{
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
                 token:locaData.token,
                 signature:111,
-            }),
+            },
             success: function (data) {
                 let theArr = data.result,arrData=[];
                 if(data.state!==200){
@@ -127,10 +125,16 @@ export class User extends React.Component {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            tid:thisdata.tid,
+                            name: thisdata.name,
+                            identifyName: thisdata.identifyName, 
+                            province: thisdata.province,
+                            city: thisdata.city,
+                            area: thisdata.area,
+                            address: thisdata.address,
+                            contactNumber: thisdata.contactNumber,
+                            countN: thisdata.countN,
+                            countY: thisdata.countY,
                         });
                     };
                 }
@@ -138,7 +142,7 @@ export class User extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.totalCount
                     }
                 })
                 if(data.result&&!data.result.length){
@@ -203,7 +207,7 @@ export class User extends React.Component {
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+         this.loadData();
     }
     componentDidUpdate(){
        

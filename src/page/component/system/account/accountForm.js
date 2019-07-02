@@ -33,15 +33,16 @@ export default Form.create()(class AccountForm extends React.Component {
                 })
                 $.ajax({
                     type: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
                     dataType: "json",
-                    url: window.url+'/visitWindows/visitorCheckin' ,
-                    data: JSON.stringify({
+                    url: window.url+'/api/admin/createAdmin' ,
+                    data: {
+                        account:values.userName,
+                        password:values.password,
+                        contactNumber:false,
+                        role:9,
                         token:this.state.token,
                         signature:111,
-                    }),
+                    },
                     success:function(data){
                         if (data.state!==200) {
                             message.warning(data.msg);
@@ -108,11 +109,11 @@ export default Form.create()(class AccountForm extends React.Component {
                                     labelCol={{span:6}}
                                     label="账号"
                                 >
-                                    {getFieldDecorator('user', {
+                                    {getFieldDecorator('userName', {
                                         rules: [{
                                             required: true, message: '请填写账号',
                                         }],
-                                        initialValue: theData.user
+                                        initialValue: theData.userName
                                     })(
                                         <Input placeholder="账号" maxLength={50}/>
                                     )}

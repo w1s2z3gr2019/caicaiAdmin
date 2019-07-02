@@ -17,7 +17,7 @@ export class ContentAdmin extends React.Component {
     }
     render() {
       return (
-        <div className="acc-content" id="content">
+        <div className="acc-content" id="contentWrap">
             <div className="conWrap">
               <Route path='/page/index' component={Index}/>
               <Route path='/page/module' component={Module}/>

@@ -188,34 +188,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                     labelCol={{span:4}}
                                     label="话题分类"
                                 >
-                                    <span className="selMore">
-                                        <Select className="left" value={this.state.topic} onChange={(e)=>{this.setState({topic:e})}} style={{width:120}} placeholder="话题分类" >
-                                            { 
-                                                topic.map(function (item) {
-                                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                                })
-                                            }
-                                        </Select>
-                                        <Select  className="left" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}} style={{width:120,margin:'0 10px'}} placeholder="话题分类" >
-                                            { 
-                                                cycle.map(function (item) {
-                                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                                })
-                                            }
-                                        </Select>
-                                        <Select placeholder="抽奖类型" 
-                                            style={{width:120}}
-                                            className="left"
-                                            value={this.state.luckType}
-                                            onChange={(e)=>{this.setState({luckType:e})}}
-                                            >
-                                            { 
-                                                luckDrawType.map(function (item) {
-                                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                                })
-                                            }
-                                        </Select>
-                                    </span>
+                                    <span className="selMore">每日 - 娱乐</span>
                                 </Form.Item>
                             </div>
                             <div className="clearBoth"> 
@@ -224,14 +197,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                     labelCol={{span:4}}
                                     label="活动标题"
                                 >
-                                    {getFieldDecorator('title', {
-                                        rules: [{
-                                            required: true, message: '请填写活动标题',
-                                        }],
-                                        initialValue: theData.title
-                                    })(
-                                        <Input style={{width:240}} placeholder="活动标题" maxLength={500}/>
-                                    )}
+                                   <span>活动标题</span>
                                 </Form.Item>
                             </div>
                             <div className="clearBoth">

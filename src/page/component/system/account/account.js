@@ -69,20 +69,17 @@ export class Account extends React.Component {
             loading: true
         });
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
+            url: window.url + "/api/admin/createAdmin",
+            data:{
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
+                account:this.state.userName,
+                // token:locaData.token,
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
-                token:locaData.token,
-                signature:111,
-            }),
             success: function (data) {
-                let theArr = data.result,arrData=[];
+                let theArr = data.data.list,arrData=[];
                 if(data.state!==200){
                     if(data.state!==513){
                         message.warning(data.msg);
@@ -164,10 +161,10 @@ export class Account extends React.Component {
             headers: {
                 "Content-Type": "application/json;charset=UTF-8"
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                token:dataTool.token,
-            }),
+            url: window.url + "/api/admin/deleteAdmin",
+            data:{
+                id:pk.id
+            },
             success: function (data) {
                 if(data.state!==200){
                     message.warning(data.msg);
@@ -199,7 +196,7 @@ export class Account extends React.Component {
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+        this.loadData();
     }
     componentDidUpdate(){
        
@@ -224,11 +221,10 @@ export class Account extends React.Component {
             <div className="wrapContent">
                 <Spin tip="数据加载中,请稍候..." spinning={this.state.loading}>
                     <div className="user-search">
-                   
                         <Input placeholder="账号" 
                             className="inpWin"
-                            value={this.state.mobile}
-                            onChange={(e) => { this.setState({ mobile: e.target.value }); }} />
+                            value={this.state.userName}
+                            onChange={(e) => { this.setState({ userName: e.target.value }); }} />
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                         <Button type="danger" onClick={this.del} disabled={!hasSelected} >删除</Button>

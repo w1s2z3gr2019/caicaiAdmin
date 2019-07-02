@@ -18,9 +18,9 @@ export class Login extends React.Component {
     handleSubmit(e){
         e.preventDefault();
         let initD = {token:'212'}
-        window.localStorage.setItem("userInfo",JSON.stringify(initD));
-        window.location.hash='/page/index';
-        return;
+        // window.localStorage.setItem("userInfo",JSON.stringify(initD));
+        // window.location.hash='/page/index';
+        // return;
         if(!this.state.userName){
             message.warning('请输入登录账号')
             return;
@@ -44,18 +44,18 @@ export class Login extends React.Component {
         });
         $.ajax({
             type: "post",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
             dataType: "json",
-            url:window.globalConfig.context+'/visitwindows/login',
-            data: JSON.stringify({
-                operatorId:this.state.userName,
+            // headers: {
+            //     "Content-Type": "application/json;charset=UTF-8"
+            // },
+            url:window.url+'/managesignin',
+            data: {
+                account:this.state.userName,
                 password:this.state.pass,
-                comId:111,  //机器码
-                signature:111  //签名信息
-            }),
+                remember:false,  
+            },
             success:function(data){
+                console.log(data)
                 if (data.state!==200) {
                     this.setState({
                         loading:false

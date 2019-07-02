@@ -27,6 +27,7 @@ export default Form.create()(class NamingForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             console.log(values)
+            let api = this.props.data.id?'/api/admin/updateTopicSponsorship':''
             if (!err) {
                 this.setState({
                     loading:true
@@ -37,7 +38,7 @@ export default Form.create()(class NamingForm extends React.Component {
                         "Content-Type": "application/json;charset=UTF-8"
                     },
                     dataType: "json",
-                    url: window.url+'/visitWindows/visitorCheckin' ,
+                    url: window.url+api ,
                     data: JSON.stringify({
                         token:this.state.token,
                         signature:111,
