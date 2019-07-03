@@ -37,7 +37,7 @@ export default Form.create()(class ProblemForm extends React.Component {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: window.url+api ,
+                    url: window.url+api,
                     data: {
                         id:this.props.data.id,
                         status:status,   //0-草稿 1-发布
@@ -46,8 +46,8 @@ export default Form.create()(class ProblemForm extends React.Component {
                         token:this.state.token
                     },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
+                        if (data.error.length>0) {
+                            message.warning(data.error[0].message);
                             return ;
                         };
                         this.setState({
@@ -96,14 +96,37 @@ export default Form.create()(class ProblemForm extends React.Component {
         return (
           <div> 
                 <Modal
-                    title={!theData.id?'常见问题创建':'常见问题修改'}
+                    title={!theData.id?'常见问题创建':theData.status?'常见问题详情':'常见问题修改'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
                     width='600px'
                 >
-                <Form  layout="horizontal">
+                {theData.status?<Form  layout="horizontal">
+                    <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
+                            <div className="clearBoth"> 
+                                <Form.Item
+                                    wrapperCol={{span:18}}
+                                    labelCol={{span:4}}
+                                    label="标题"
+                                >
+                                    <span>{theData.title}</span>
+                                </Form.Item>
+                            </div>
+                            <div className="clearBoth">
+                                <Form.Item
+                                    wrapperCol={{span:18}}
+                                    labelCol={{span:4}}
+                                    label="内容"
+                                >
+                                    <span>{theData.content}</span>
+                                </Form.Item>
+                            </div>
+                            
+                        </Spin>
+                    </Form>
+                :<Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
                             <div className="clearBoth"> 
                                 <Form.Item
@@ -158,7 +181,7 @@ export default Form.create()(class ProblemForm extends React.Component {
                                 </Form.Item>
                             </div>
                         </Spin>
-                    </Form>
+                    </Form>}
                 </Modal>
           </div>
         );

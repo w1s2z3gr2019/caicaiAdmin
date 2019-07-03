@@ -169,6 +169,7 @@ export default Form.create()(class IndexForm extends React.Component {
               ) : null}
             </Form.Item>
           ));
+          const circelData =this.props.circelData||[];
         return (
           <div> 
                 <Modal
@@ -198,8 +199,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                         </Select>
                                         <Select  className="left" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}} style={{width:120,margin:'0 10px'}} placeholder="话题分类" >
                                             { 
-                                                cycle.map(function (item) {
-                                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
+                                                circelData.map(function (item) {
+                                                    return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
                                                 })
                                             }
                                         </Select>
@@ -239,7 +240,13 @@ export default Form.create()(class IndexForm extends React.Component {
                                     labelCol={{ span: 4 }}
                                     wrapperCol={{ span: 18 }}
                                     label="主题图片" >
-                                    <CropBlock number = {5} aspectRatio = {2/1} url = '/manage/manager/upload.do' idValue="imgLoad1" uploadData = {{"type": 'item'}} urlArr = {[]} />
+                                    <CropBlock 
+                                    number = {1} 
+                                    aspectRatio = {2/1} 
+                                    url = '/api/admin/uploadPicture' 
+                                    uploadData = {{"sign": 'cover_picture'}} 
+                                    idValue="imgLoad1" 
+                                    urlArr = {[]} />
                                 </Form.Item>
                             </div>
                             {this.state.luckType!==3?<div className="clearBoth">
@@ -307,8 +314,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                     number = {1} 
                                     aspectRatio = {2/1} 
                                     idValue="imgLoad2" 
-                                    url = '/manage/manager/upload.do' 
-                                    uploadData = {{"type": 'item'}} 
+                                    url = '/api/admin/uploadPicture' 
+                                    uploadData = {{"sign": 'cover_picture'}} 
                                     urlArr = {[]} 
                                     />
                                 </Form.Item>

@@ -52,9 +52,9 @@ export class LeftMenu extends React.Component {
         }
       };
     componentDidMount() {
-        var locaData = JSON.parse(window.localStorage.getItem("data")) || {};
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo")) || {};
         this.setState({
-            name: locaData.operatorName
+            name: locaData.name
         })
     }
     render() {

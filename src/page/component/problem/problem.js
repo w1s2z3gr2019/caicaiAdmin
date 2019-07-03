@@ -30,28 +30,32 @@ export class Problem extends React.Component {
             },
             minColumns:[
                 {
-                    title: '序号',
-                    dataIndex: 'visitorName',
-                    key: 'visitorName'
-                },  {
                     title: '常见问题标题',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile'
+                    dataIndex: 'title',
+                    key: 'title'
                 },
                 {
                     title: '常见问题内容',
-                    dataIndex: 'userName',
+                    dataIndex: 'content',
                     key: 'userName',
                     render:(text)=>{
-                        return text&&text.length>8?
-                        <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
+                        return text&&text.length>10?
+                        <Tooltip placement="topLeft" title={text}>{text.substr(0,10)+'...'}</Tooltip>:text
                     } 
                 },
                 {
-                    title: '(创建/发布)时间',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany',
-                }
+                    title: '创建时间',
+                    dataIndex: 'createTimes',
+                    key: 'createTimes',
+                },
+                {
+                    title: '状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render:(text)=>{
+                        return text?'发布':'草稿'
+                    }
+                },
             ],
             dataSource: [],
         };
@@ -70,30 +74,28 @@ export class Problem extends React.Component {
         $.ajax({
             method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
             url: window.url + "/api/admin/selectCommonProblemList",
             data: {
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
-                title:this.state.title
+                title:this.state.title,
+                token:locaData.token
             },
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            id:thisdata.id,
+                            title: thisdata.title,
+                            content: thisdata.content, 
+                            createTimes: thisdata.createTimes,
+                            status: thisdata.status,
                         });
                     };
                 }
@@ -101,10 +103,10 @@ export class Problem extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.totalCount
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!data.data.list.length){
 					this.setState({
                         pagination:{
                             current:0,
@@ -149,6 +151,7 @@ export class Problem extends React.Component {
         this.loadData();
     }
     del=()=>{
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         let rowItem = this.state.selectedRowKeys[0];
         let data = this.state.dataSource ||[];
         let pk =data[rowItem]
@@ -161,21 +164,23 @@ export class Problem extends React.Component {
             url: window.url + "/api/admin/deleteCommonProblem",
             data:{
                 id:pk.id,
-                token:dataTool.token,
+                token:locaData.token,
             },
             success: function (data) {
-                if(data.state!==200){
-                    message.warning(data.msg);
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
                     return;
-                }
+                };
                 message.success('删除成功');
-                this.loadData(1)
+                this.loadData(1);
+            }.bind(this),
+            error:function(){
+                this.setState({
+                    loading:false
+                })
+                message.error('数据错误,请联系管理员')
             }.bind(this)
-        }).alawys(function(){
-            this.setState({
-                laoding:false
-            })
-        }.bind(this))
+        })
     }
      //修改触发弹框；
     save=()=>{
@@ -236,7 +241,6 @@ export class Problem extends React.Component {
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
                             pagination={this.state.pagination}
-                            scroll={{x:1000}}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行

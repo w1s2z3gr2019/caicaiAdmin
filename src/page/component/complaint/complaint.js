@@ -30,29 +30,29 @@ export class Complaint extends React.Component {
             },
             minColumns:[
                 {
-                    title: '序号',
-                    dataIndex: 'visitorName',
-                    key: 'visitorName'
-                },  {
                     title: '投诉人',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile'
+                    dataIndex: 'cname',
+                    key: 'cname'
                     
                 },
                 {
-                    title: '联系方式',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany'
-                     
+                    title: '投诉标题',
+                    dataIndex: 'title',
+                    key: 'title'
                 },
                 {
-                    title: '内容',
-                    dataIndex: 'userName',
-                    key: 'userName',
+                    title: '投诉内容',
+                    dataIndex: 'content',
+                    key: 'content',
                     render:(text)=>{
                         return text&&text.length>20?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,20)+'...'}</Tooltip>:text
                     }
+                },
+                {
+                    title: '投诉时间',
+                    dataIndex: 'createTimes',
+                    key: 'createTimes'
                 },
             ],
             dataSource: [],
@@ -69,32 +69,32 @@ export class Complaint extends React.Component {
             page:pageNo,
             loading: true
         });
-       
-
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
             url: window.url + "/api/admin/complaintSuggestionsList",
             data: {
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
-                title:this.state.title
+                title:this.state.title,
+                token:locaData.token
             },
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length>0){
+                    message.warning(data.msg);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            id:thisdata.id,
+                            uid:thisdata.uid,
+                            title: thisdata.title,
+                            content: thisdata.content, 
+                            createTimes: thisdata.createTimes,
+                            cname: thisdata.cname,
                         });
                     };
                 }
@@ -102,10 +102,10 @@ export class Complaint extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.totalCount
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!data.data.list.length){
 					this.setState({
                         pagination:{
                             current:0,
@@ -202,7 +202,6 @@ export class Complaint extends React.Component {
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
                             pagination={this.state.pagination}
-                            scroll={{x:1000}}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行

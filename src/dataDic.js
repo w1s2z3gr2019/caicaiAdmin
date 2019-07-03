@@ -63,12 +63,20 @@ module.exports={
     ],
     topic:[
         {
+            value:0,
+            key:'热门'
+        },
+        {
             value:1,
-            key:'娱乐'
+            key:'体育'
         },
         {
             value:2,
-            key:'社会'
+            key:'娱乐'
+        },
+        {
+            value:3,
+            key:'军事'
         }
     ],
     cycle:[
@@ -94,6 +102,5 @@ module.exports={
             value:2,
             key:'赞助商'
         }
-    ]
-    
+    ],
 }

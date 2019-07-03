@@ -26,26 +26,23 @@ export default Form.create()(class NamingForm extends React.Component {
     handleSubmit=(e)=>{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            console.log(values)
             let api = this.props.data.id?'/api/admin/updateTopicSponsorship':''
             if (!err) {
                 this.setState({
                     loading:true
                 })
                 $.ajax({
-                    type: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
+                    type: "get",
                     dataType: "json",
                     url: window.url+api ,
-                    data: JSON.stringify({
-                        token:this.state.token,
-                        signature:111,
-                    }),
+                    data: {
+                        title:values.title,
+                        id:this.props.data.id,
+                        token:this.state.token
+                    },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
+                        if (data.error.length>0) {
+                            message.warning(data.error[0].message);
                             return ;
                         };
                         this.setState({
@@ -107,11 +104,11 @@ export default Form.create()(class NamingForm extends React.Component {
                                     labelCol={{span:6}}
                                     label="标题名称"
                                 >
-                                    {getFieldDecorator('user', {
+                                    {getFieldDecorator('title', {
                                         rules: [{
                                             required: true, message: '请填写标题名称',
                                         }],
-                                        initialValue: theData.user
+                                        initialValue: theData.title
                                     })(
                                         <Input placeholder="标题名称" maxLength={50}/>
                                     )}
@@ -125,7 +122,7 @@ export default Form.create()(class NamingForm extends React.Component {
                                         type="primary"
                                         htmlType="submit"
                                     >
-                                        保存
+                                        修改
                                     </Button>
                                     <Button onClick={this.handleCancel} type="danger" >取消</Button>
                                 </Form.Item>

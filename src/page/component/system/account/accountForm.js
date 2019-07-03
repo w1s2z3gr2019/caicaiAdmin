@@ -34,25 +34,25 @@ export default Form.create()(class AccountForm extends React.Component {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: window.url+'/api/admin/createAdmin' ,
+                    url: window.url+'/api/admin/createAdmin',
                     data: {
                         account:values.userName,
                         password:values.password,
-                        contactNumber:false,
+                        contactNumber:values.phone,
                         role:9,
                         token:this.state.token,
                         signature:111,
                     },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
+                        if (data.error.length>0) {
+                            message.warning(data.error[0].mesage);
                             return ;
                         };
                         this.setState({
                             visible: false,
                             loading:false
                         });
-                        message.success('操作成功');
+                        message.success('创建成功');
                         this.props.callbackPass(true);
                     }.bind(this),
                     error:function(a,b,c){

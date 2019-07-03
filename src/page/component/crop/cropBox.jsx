@@ -4,7 +4,7 @@ import React, {
 import $ from 'jquery';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import {Button,Modal,Divider } from 'antd'
+import {Button,Modal,Divider, message } from 'antd'
 
 class CropBox extends Component {
 	constructor(props) {
@@ -56,8 +56,10 @@ class CropBox extends Component {
 	    if (typeof this.cropper.getCroppedCanvas() === 'undefined') {
 	      return;
 	    }
-	    let img64Data = this.cropper.getCroppedCanvas().toDataURL();
-	    let imgblobDate = this.convertBase64UrlToBlob(img64Data);
+			let img64Data = this.cropper.getCroppedCanvas().toDataURL();
+			console.log(img64Data)
+			let imgblobDate = this.convertBase64UrlToBlob(img64Data);
+			console.log(imgblobDate)
 	    this.submitUpload(imgblobDate);
 	}
 
@@ -70,14 +72,18 @@ class CropBox extends Component {
 		}
 		
 		$.ajax({
-		    url: this.state.url,
+		    url: window.url+this.state.url,
 		    type: 'POST',
 		    data: fd,
 		    contentType: false,
 		    processData: false,
 		    dataType: 'json',
 		    success: function (data) {
-	    		console.log(data.result);
+					console.log(data);
+					if(data.error.length>0){
+						message.warning(data.error[0].message);
+						return;
+					}
 	    		if(_this.props.getUrl) {
 	    			_this.props.getUrl(data.result);
 	    		}

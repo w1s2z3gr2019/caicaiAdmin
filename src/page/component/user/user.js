@@ -30,61 +30,39 @@ export class User extends React.Component {
                 }
             },
             minColumns:[
-                {
-                    title: '序号',
-                    dataIndex: 'visitorName',
-                    width:120,
-                    key: 'visitorName'
-                },  {
+                 {
                     title: '用户名称',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile',
-                    width:140,
+                    dataIndex: 'name',
+                    key: 'name'
+                },
+                {
+                    title: '省-市-区',
+                    dataIndex: 'citys',
+                    key: 'citys'
+                },
+                {
+                    title: '收货地址',
+                    dataIndex: 'address',
+                    key: 'address',
                     render:(text)=>{
                         return text&&text.length>8?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
                     }
                 },
                 {
-                    title: '猜奖记录',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany',
-                    width:160,
-                     
+                    title: '猜奖数',
+                    dataIndex: 'countN',
+                    key: 'countN'
                 },
                 {
-                    title: '猜奖类型',
-                    dataIndex: 'userName',
-                    key: 'userName'
-                },
-                {
-                    title: '累计概率',
-                    dataIndex: 'userId',
-                    key: 'userId'
-                },
-                {
-                    title: '中奖记录',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime'
-                },
-                {
-                    title: '个人地址',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render:(text)=>{
-                        return text&&text.length>8?
-                        <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
-                    } 
-                },
-                {
-                    title: '姓名',
-                    dataIndex: 'status1',
-                    key: 'status1',
+                    title: '中奖数',
+                    dataIndex: 'countY',
+                    key: 'countY'
                 },
                 {
                     title: '联系方式',
-                    dataIndex: 'status2',
-                    key: 'status2',
+                    dataIndex: 'contactNumber',
+                    key: 'contactNumber'
                 }
             ],
             dataSource: [],
@@ -104,23 +82,19 @@ export class User extends React.Component {
         $.ajax({
             method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
             url: window.url + "/api/admin/selectUser",
             data:{
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
-                token:locaData.token,
-                signature:111,
+                name:this.state.name,
+                token:locaData.token
             },
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
@@ -131,6 +105,7 @@ export class User extends React.Component {
                             province: thisdata.province,
                             city: thisdata.city,
                             area: thisdata.area,
+                            citys:thisdata.province+'-'+thisdata.city+'-'+thisdata.area,
                             address: thisdata.address,
                             contactNumber: thisdata.contactNumber,
                             countN: thisdata.countN,
@@ -145,7 +120,7 @@ export class User extends React.Component {
                         total:data.totalCount
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!(data.data.list.length)){
 					this.setState({
                         pagination:{
                             current:0,
@@ -163,7 +138,7 @@ export class User extends React.Component {
                 this.setState({
                     loading:false
                 });
-                message.error('数据访问异常')
+                message.error('数据访问异常');
             }.bind(this)
         });
     }
@@ -182,8 +157,7 @@ export class User extends React.Component {
         }
     }
     reset=()=>{
-        this.state.mobile='';
-        this.state.visitorName='';
+        this.state.name='';
         this.loadData();
     }
     //搜索
@@ -233,20 +207,8 @@ export class User extends React.Component {
                     <div className="user-search">
                         <Input placeholder="用户名称" 
                             className="inpWin"
-                            value={this.state.mobile}
-                            onChange={(e) => { this.setState({ mobile: e.target.value }); }} />
-                        <Select placeholder="抽奖类型" 
-                            style={{width:140}}
-                            className="inpWin"
-                            value={this.state.luckType}
-                            onChange={(e)=>{this.setState({luckType:e})}}
-                            >
-                            { 
-                                luckDrawType.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                })
-                            }
-                        </Select>
+                            value={this.state.name}
+                            onChange={(e) => { this.setState({ name: e.target.value }); }} />
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                     </div>

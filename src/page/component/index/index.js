@@ -17,6 +17,7 @@ export class Index extends React.Component {
             selectedRowKeys: [],
             selectedRows: [],
             loading:false,
+            circelData:[],
             visibleForm:false,
             pagination: {
                 defaultCurrent: 1,
@@ -100,36 +101,48 @@ export class Index extends React.Component {
             page:pageNo,
             loading: true
         });
-       
-
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
+            url: window.url + "/api/admin/selectTC",
+            data: {
+                type:this.state.type,
+                frequency:this.state.frequency,
+                drawType:this.state.drawType,
+                title:this.state.title,
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
+                token:locaData.token
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
-                token:locaData.token,
-                signature:111,
-            }),
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length){
+                    message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            id: thisdata.id,
+                            serialNumber: thisdata.serialNumber, 
+                            type: thisdata.type,
+                            frequency: thisdata.frequency,
+                            drawType: thisdata.drawType, 
+                            title: thisdata.title,
+                            content: thisdata.content,
+                            pictureUrl: thisdata.pictureUrl, 
+                            prizeUrl: thisdata.prizeUrl,
+                            sponsorshipType: thisdata.sponsorshipType,
+                            sponsor: thisdata.sponsor, 
+                            prizeDescription: thisdata.prizeDescription,
+                            appUrl: thisdata.appUrl,
+                            publicUrl: thisdata.publicUrl, 
+                            createTime: thisdata.createTime,
+                            updateTime: thisdata.updateTime,
+                            status: thisdata.status, 
+                            createTimes: thisdata.createTimes,
+                            updateTimes: thisdata.updateTimes,
                         });
                     };
                 }
@@ -137,10 +150,10 @@ export class Index extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.totalCount
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!data.data.list.length){
 					this.setState({
                         pagination:{
                             current:0,
@@ -202,10 +215,40 @@ export class Index extends React.Component {
             selectedRowKeys: [record.key]
         });
     }
+    //周期字典数据
+    cicleData=()=>{
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
+        $.ajax({
+            method: "get",
+            dataType: "json",
+            url: window.url + "/api/admin/topicSponsorshipList",
+            data: {
+                pageNo:1,
+                pageSize:9999,
+                token:locaData.token
+            },
+            success: function (data) {
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
+                    return;
+                }
+                this.setState({
+                    circelData:data.data
+                })
+            }.bind(this),
+            error:function(){
+                this.setState({
+                    loading:false
+                });
+                message.error('系统错误,请联系管理员.')
+            }.bind(this)
+        })
+    }
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+        this.loadData();
+        this.cicleData();
     }
     componentDidUpdate(){
        
@@ -226,18 +269,19 @@ export class Index extends React.Component {
 
         };
         const hasSelected = this.state.selectedRowKeys.length > 0;
+        const circelData = this.state.circelData||[];
         return (
             <div className="wrapContent">
                 <Spin tip="数据加载中,请稍候..." spinning={this.state.loading}>
                     <div className="user-search">
                         <Input placeholder="活动标题" 
                             className="inpWin"
-                            value={this.state.mobile}
-                            onChange={(e) => { this.setState({ mobile: e.target.value }); }} />
+                            value={this.state.title}
+                            onChange={(e) => { this.setState({ title: e.target.value }); }} />
                         <Select placeholder="抽奖类型" 
                             className="inpWin"
-                            value={this.state.luckType}
-                            onChange={(e)=>{this.setState({luckType:e})}}
+                            value={this.state.drawType}
+                            onChange={(e)=>{this.setState({drawType:e})}}
                             >
                             { 
                                 luckDrawType.map(function (item) {
@@ -245,30 +289,29 @@ export class Index extends React.Component {
                                 })
                             }
                         </Select>
-                        <Select className="inpWin" value={this.state.topic} onChange={(e)=>{this.setState({topic:e})}} placeholder="话题分类" >
+                        <Select className="inpWin" 
+                            value={this.state.type} 
+                            onChange={(e)=>{this.setState({type:e})}} 
+                            placeholder="话题分类" >
                             { 
                                 topic.map(function (item) {
                                     return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>
-                        <Select  className="inpWin" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}}  placeholder="周期分类" >
+                        <Select  className="inpWin" 
+                            value={this.state.frequency} 
+                            onChange={(e)=>{this.setState({frequency:e})}} 
+                            placeholder="周期分类" >
                             { 
-                                cycle.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                })
-                            }
-                        </Select>
-                        <Select className="inpWin" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}}  placeholder="发布状态" >
-                            { 
-                                cycle.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
+                                circelData.map(function (item) {
+                                    return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
                                 })
                             }
                         </Select>
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
-                        <div style={{float:'right',margin:'10px 0',overflow:'hidden'}}>
+                        <div style={{float:'right',overflow:'hidden'}}>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >发布</Button>
                             <Button type="danger" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >撤回</Button>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
@@ -290,6 +333,7 @@ export class Index extends React.Component {
                     </div>
                 </Spin>
                 <IndexForm 
+                    circelData={circelData}
                     visible={this.state.visibleForm}
                     callbackPass={this.callbackPass}
                     data={this.state.theData}

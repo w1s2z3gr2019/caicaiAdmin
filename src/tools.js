@@ -40,7 +40,6 @@ export var dataTool= {
     token:function(){
         let userInfo = window.localStorage.getItem("userInfo");
         let obj = JSON.parse(userInfo);
-        console.log(obj)
         return obj.token;
     }
 }

@@ -31,12 +31,20 @@ export class Naming extends React.Component {
             minColumns:[
                 {
                     title: '序号',
-                    dataIndex: 'visitorName',
-                    key: 'visitorName'
+                    dataIndex: 'id',
+                    key: 'id'
                 },  {
                     title: '标题名称',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile'
+                    dataIndex: 'title',
+                    key: 'title'
+                },
+                {
+                    title: '创建时间',
+                    dataIndex: 'createTime',
+                    key: 'createTime',
+                    render:(text)=>{
+                        return text?(new Date(text)).toLocaleString():''
+                    }
                 }
             ],
             dataSource: [],
@@ -54,33 +62,28 @@ export class Naming extends React.Component {
             loading: true
         });
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
             url: window.url + "/api/admin/topicSponsorshipList",
             data: {
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
-                token:locaData.token
-               
+                token:locaData.token,
+                title:this.state.title
             },
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            id:thisdata.id,
+                            title: thisdata.title,
+                            createTime: thisdata.createTime,
                         });
                     };
                 }
@@ -184,7 +187,7 @@ export class Naming extends React.Component {
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+        this.loadData();
     }
     componentDidUpdate(){
        
@@ -202,14 +205,12 @@ export class Naming extends React.Component {
                     selectedRowKeys: selectedRowKeys.slice(-1)
                 });
             },
-
         };
         const hasSelected = this.state.selectedRowKeys.length > 0;
         return (
             <div className="wrapContent">
                 <Spin tip="数据加载中,请稍候..." spinning={this.state.loading}>
                     <div className="user-search">
-                   
                         <Input placeholder="标题名称" 
                             className="inpWin"
                             value={this.state.mobile}
@@ -219,15 +220,14 @@ export class Naming extends React.Component {
                         <Button type="danger" onClick={this.del} disabled={!hasSelected} >删除</Button>
                         <div style={{float:'right'}}>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
-                            <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
+                           {/*<Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>*/}
                         </div>
                     </div>
                     <div className="patent-table">
                         <Table columns={columns}
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
-                            pagination={this.state.pagination}
-                            scroll={{x:1000}}
+                            pagination={false}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行

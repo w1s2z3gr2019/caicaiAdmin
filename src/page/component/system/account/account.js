@@ -30,28 +30,19 @@ export class Account extends React.Component {
             },
             minColumns:[
                 {
-                    title: '序号',
-                    dataIndex: 'visitorName',
-                    key: 'visitorName'
-                },  {
                     title: '账号',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile'
-                },
-                {
-                    title: '密码',
-                    dataIndex: 'userName',
-                    key: 'userName'
+                    dataIndex: 'account',
+                    key: 'account'
                 },
                 {
                     title: '联系方式',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany',
+                    dataIndex: 'phone',
+                    key: 'phone',
                 },
                 {
                     title: '创建时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    dataIndex: 'createTimes',
+                    key: 'createTimes',
                 }
             ],
             dataSource: [],
@@ -71,28 +62,27 @@ export class Account extends React.Component {
         $.ajax({
             method: "get",
             dataType: "json",
-            url: window.url + "/api/admin/createAdmin",
+            url: window.url + "/api/admin/selectAdminList",
             data:{
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
                 account:this.state.userName,
-                // token:locaData.token,
+                token:locaData.token,
             },
             success: function (data) {
-                let theArr = data.data.list,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[]
+                if(data.error.length>0){
+                        message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            account: thisdata.account,
+                            id: thisdata.id, 
+                            phone: thisdata.contactNumber,
+                            createTimes:thisdata.createTimes        
                         });
                     };
                 }
@@ -100,10 +90,10 @@ export class Account extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.totalPage
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!data.data.list.length){
 					this.setState({
                         pagination:{
                             current:0,
@@ -149,6 +139,7 @@ export class Account extends React.Component {
         this.loadData();
     }
     del=()=>{
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         let rowItem = this.state.selectedRowKeys[0];
         let data = this.state.dataSource ||[];
         let pk =data[rowItem]
@@ -158,26 +149,26 @@ export class Account extends React.Component {
         $.ajax({
             method: "post",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
             url: window.url + "/api/admin/deleteAdmin",
             data:{
-                id:pk.id
+                id:pk.id,
+                token:locaData.token
             },
             success: function (data) {
-                if(data.state!==200){
-                    message.warning(data.msg);
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
                     return;
                 }
                 message.success('删除成功');
                 this.loadData(1)
+            }.bind(this),
+            error:function(err){
+                this.setState({
+                    loading:false
+                });
+                message.error('数据访问异常');
             }.bind(this)
-        }).alawys(function(){
-            this.setState({
-                laoding:false
-            })
-        }.bind(this))
+        })
     }
      //修改触发弹框；
     save=()=>{
@@ -229,7 +220,6 @@ export class Account extends React.Component {
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                         <Button type="danger" onClick={this.del} disabled={!hasSelected} >删除</Button>
                         <div style={{float:'right'}}>
-                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
                             <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
                         </div>
                     </div>
@@ -238,7 +228,6 @@ export class Account extends React.Component {
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
                             pagination={this.state.pagination}
-                            scroll={{x:1000}}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行
