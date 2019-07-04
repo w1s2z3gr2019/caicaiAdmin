@@ -35,15 +35,15 @@ module.exports={
     ],
     luckDrawType:[
         {
-            value:1,
+            value:0,
             key:'精确抽奖'
         },
         {
-            value:2,
+            value:1,
             key:'极限概率'
         },
         {
-            value:3,
+            value:2,
             key:'随机抽奖'
         } 
     ],
@@ -95,11 +95,11 @@ module.exports={
     ],
     sponsorData:[
         {
-            value:1,
+            value:0,
             key:'猜奖官方'
         },
         {
-            value:2,
+            value:1,
             key:'赞助商'
         }
     ],

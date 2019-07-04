@@ -64,9 +64,11 @@ class CropBox extends Component {
 	}
 
 	submitUpload=(imgBlob)=> {
+		var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
 		let _this = this;
 		let fd = new FormData();
 		fd.append('file', imgBlob);
+		fd.append('token',locaData.token);
 		for(let key in this.state.uploadData) {
 			fd.append(key, this.state.uploadData[key]);
 		}

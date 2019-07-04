@@ -32,16 +32,10 @@ export class Index extends React.Component {
                 }
             },
             minColumns:[
-                {
-                    title: '活动编号',
-                    dataIndex: 'visitorName',
-                    width:120,
-                    key: 'visitorName'
-                },  {
+                 {
                     title: '活动标题',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile',
-                    width:140,
+                    dataIndex: 'title',
+                    key: 'title',
                     render:(text)=>{
                         return text&&text.length>8?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
@@ -49,13 +43,11 @@ export class Index extends React.Component {
                 },
                 {
                     title: '活动分类',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany',
-                    width:160,
+                    dataIndex: 'type',
+                    key: 'type',
                     render:(text)=>{
-                        return text&&text.length>8?
-                        <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
-                    }   
+                        return dataTool.topicVal(text);
+                    }  
                 },
                 {
                     title: '奖品名称',

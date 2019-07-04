@@ -2,7 +2,7 @@ import React from 'react';
 import {Form,Button,Modal, message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import {luckDrawType,topic,cycle,sponsorData} from '../../../dataDic.js';
+import {luckDrawType,topic,sponsorData} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 import './index.less';
 import CropBlock from '../crop/cropBlock';
@@ -13,12 +13,14 @@ export default Form.create()(class IndexForm extends React.Component {
     constructor(props){
         super(props);
         this.state={
+            keys:[1,2,3],
+            names:['name1','name2','name3'],
             visible:false,
             loading:false,
-            luckType:1,
-            topic:1,
-            cycle:1,
-            sponsor:1,
+            frequency:1,
+            type:0,
+            drawType:2,
+            sponsorshipType:0,
             link:[]
         }
     }
@@ -32,7 +34,7 @@ export default Form.create()(class IndexForm extends React.Component {
             visible:true
         })
     }
-    handleSubmit=(e)=>{
+    handleSubmit=(e,status)=>{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             console.log(values)
@@ -40,20 +42,46 @@ export default Form.create()(class IndexForm extends React.Component {
                 this.setState({
                     loading:true
                 })
+                let topicList1=[],topicList2=[];
+                if(values.keys.length){
+                    values.names.map((item,index)=>{
+                        topicList1.push({
+                            id:this.props.data.id?this.props.data.topicList[index].id:'',
+                            content:item
+                        })
+                    })
+                }
+                topicList2.push({id:this.props.data.id?this.props.data.topicList[0].id:'',content:this.state.leftVal});
+                topicList2.push({id:this.props.data.id?this.props.data.topicList[0].id:'',content:this.state.rightVal});
+                let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC'
                 $.ajax({
                     type: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
                     dataType: "json",
-                    url: window.url+'/visitWindows/visitorCheckin' ,
-                    data: JSON.stringify({
+                    url: window.url+api ,
+                    data: {
+                        id:this.props.data.id,
                         token:this.state.token,
-                        signature:111,
-                    }),
+                        type:this.state.type,
+                        frequency:this.state.frequency,
+                        drawType:this.state.drawType,
+                        title:values.title,
+                        content:this.state.content,
+                        pictureUrl:this.state.pictureUrl,
+                        prizeUrl:this.state.prizeUrl,
+                        sponsorshipType:this.state.sponsorshipType,
+                        sponsor:this.state.sponsorshipType?this.state.sponsor:null,
+                        prizeDescription:values.prizeDescription,
+                        appUrl:this.state.appUrl,
+                        publicUrl:this.state.publicUrl,
+                        status:status,
+                        topicList:this.state.drawType===2?JSON.stringify(topicList1):JSON.stringify(topicList2)
+                    },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
+                        if (data.error.length>0) {
+                            this.setState({
+                                loading:false
+                            })
+                            message.warning(data.error[0].message);
                             return ;
                         };
                         this.setState({
@@ -65,12 +93,11 @@ export default Form.create()(class IndexForm extends React.Component {
                     }.bind(this),
                     error:function(a,b,c){
                         message.error('数据访问异常')
-                    }
-                }).always(function () {
-                    this.setState({
-                        loading: false
-                    });
-                }.bind(this));
+                        this.setState({
+                            loading:false
+                        })
+                    }.bind(this)
+                })
             }
         });
     }
@@ -105,8 +132,7 @@ export default Form.create()(class IndexForm extends React.Component {
         form.setFieldsValue({
           keys: nextKeys,
         });
-    };
-    
+    }; 
     componentWillReceiveProps(nextProps){
         if (!this.props.visible && nextProps.visible){
             this.setState({
@@ -115,7 +141,6 @@ export default Form.create()(class IndexForm extends React.Component {
             this.props.form.resetFields();
         }
     }
-
     componentDidMount(a,b) {
         this.state.token=dataTool.token();
     }
@@ -140,7 +165,7 @@ export default Form.create()(class IndexForm extends React.Component {
               sm: { span: 20, offset: 4 },
             },
           };
-        getFieldDecorator('keys', { initialValue: [] });
+        getFieldDecorator('keys', { initialValue: this.state.keys });
         const keys = getFieldValue('keys');
         let theData = this.props.data||{};
         const formItems = keys.map((k, index) => (
@@ -159,6 +184,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     message: "请输入观点",
                   },
                 ],
+                initialValue: this.state.names[k-1]
               })(<Input placeholder="请输入观点" style={{ width: '60%', marginRight: 8 }} />)}
               {keys.length > 1 ? (
                 <Icon
@@ -173,14 +199,14 @@ export default Form.create()(class IndexForm extends React.Component {
         return (
           <div> 
                 <Modal
-                    title={!theData.activeId?'活动创建':'活动修改'}
+                    title={!theData.id?'活动创建':'活动修改'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
                     width='800px'
                 >
-                <Form  layout="horizontal" onSubmit={this.handleSubmit.bind(this)}>
+                <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
 
                             <div className="clearBoth"> 
@@ -190,14 +216,14 @@ export default Form.create()(class IndexForm extends React.Component {
                                     label="话题分类"
                                 >
                                     <span className="selMore">
-                                        <Select className="left" value={this.state.topic} onChange={(e)=>{this.setState({topic:e})}} style={{width:120}} placeholder="话题分类" >
+                                        <Select className="left" value={this.state.type} onChange={(e)=>{this.setState({type:e})}} style={{width:120}} placeholder="话题分类" >
                                             { 
                                                 topic.map(function (item) {
                                                     return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                                 })
                                             }
                                         </Select>
-                                        <Select  className="left" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}} style={{width:120,margin:'0 10px'}} placeholder="话题分类" >
+                                        <Select  className="left" value={this.state.frequency} onChange={(e)=>{this.setState({frequency:e})}} style={{width:120,margin:'0 10px'}} placeholder="话题频率" >
                                             { 
                                                 circelData.map(function (item) {
                                                     return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
@@ -207,8 +233,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                         <Select placeholder="抽奖类型" 
                                             style={{width:120}}
                                             className="left"
-                                            value={this.state.luckType}
-                                            onChange={(e)=>{this.setState({luckType:e})}}
+                                            value={this.state.drawType}
+                                            onChange={(e)=>{this.setState({drawType:e})}}
                                             >
                                             { 
                                                 luckDrawType.map(function (item) {
@@ -246,10 +272,10 @@ export default Form.create()(class IndexForm extends React.Component {
                                     url = '/api/admin/uploadPicture' 
                                     uploadData = {{"sign": 'cover_picture'}} 
                                     idValue="imgLoad1" 
-                                    urlArr = {[]} />
+                                    urlArr = {[this.state.pictureUrl]} />
                                 </Form.Item>
                             </div>
-                            {this.state.luckType!==3?<div className="clearBoth">
+                            {this.state.drawType!==2?<div className="clearBoth">
                                 <Form.Item 
                                     wrapperCol={{span:12}}
                                     labelCol={{span:4}}
@@ -277,11 +303,11 @@ export default Form.create()(class IndexForm extends React.Component {
                                     labelCol={{span:4}}
                                     label="奖品名称"
                                 >
-                                    {getFieldDecorator('title', {
+                                    {getFieldDecorator('prizeDescription', {
                                         rules: [{
                                             required: true, message: '请填写奖品名称',
                                         }],
-                                        initialValue: theData.title
+                                        initialValue: theData.prizeDescription
                                     })(
                                         <Input style={{width:240}} placeholder="奖品名称" maxLength={500}/>
                                     )}
@@ -294,14 +320,14 @@ export default Form.create()(class IndexForm extends React.Component {
                                         label="赞助"
                                     >
                                     <span>
-                                        <Select value={this.state.sponsor} onChange={(e)=>{this.setState({sponsor:e})}} style={{width:120}} placeholder="赞助" >
+                                        <Select value={this.state.sponsorshipType} onChange={(e)=>{this.setState({sponsorshipType:e})}} style={{width:120}} placeholder="赞助" >
                                             { 
                                                 sponsorData.map(function (item) {
                                                     return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                                 })
                                             }
                                         </Select>
-                                        {this.state.sponsor===2?<Input placeholder="赞助伤名称" style={{width:140,marginLeft:15}} value={this.state.sponsorName} onChange={(e)=>{this.setState({sponsorName:e})}}/>:""}
+                                        {this.state.sponsorshipType===1?<Input placeholder="赞助伤名称" style={{width:140,marginLeft:15}} value={this.state.sponsor} onChange={(e)=>{this.setState({sponsor:e.target.value})}}/>:""}
                                     </span>
                                 </Form.Item>       
                             </div>
@@ -316,7 +342,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                     idValue="imgLoad2" 
                                     url = '/api/admin/uploadPicture' 
                                     uploadData = {{"sign": 'cover_picture'}} 
-                                    urlArr = {[]} 
+                                    urlArr = {[this.state.prizeUrl]} 
                                     />
                                 </Form.Item>
                             </div>
@@ -328,16 +354,28 @@ export default Form.create()(class IndexForm extends React.Component {
                                 >
                                     <Checkbox.Group style={{ width: '100%' }} 
                                             value={this.state.link} 
-                                            onChange={(e)=>{console.log(e);this.setState({link:e})}}>
+                                            onChange={(e)=>{
+                                                let eStr =e.join('');
+                                                if(!(eStr.indexOf('1')>-1)){
+                                                    this.setState({
+                                                        appUrl:''
+                                                    })
+                                                };
+                                                if(!(eStr.indexOf('2')>-1)){
+                                                    this.setState({
+                                                        publicUrl:''
+                                                    })
+                                                };
+                                                this.setState({link:e})}}>
                                         <div style={{marginBottom:10,height:32}}>
                                             <Checkbox value="1">小程序</Checkbox> 
-                                           <Input disabled={!~(this.state.link.join('')).indexOf('1')} placeholder="输入小程序链接" style={{width:140,marginLeft:15}} value={this.state.procedures} 
-                                                onChange={(e)=>{this.setState({procedures:e})}}/>
+                                           <Input disabled={!~(this.state.link.join('')).indexOf('1')} placeholder="输入小程序链接" style={{width:140,marginLeft:15}} value={this.state.appUrl} 
+                                                onChange={(e)=>{this.setState({appUrl:e.target.value})}}/>
                                         </div>
                                         <div style={{marginBottom:10,height:32}}> 
                                             <Checkbox value="2">公众号</Checkbox>   
-                                            <Input placeholder="输入公众号链接" disabled={!~(this.state.link.join('')).indexOf('2')} style={{width:140,marginLeft:15}} value={this.state.publicNumber} 
-                                                onChange={(e)=>{this.setState({publicNumber:e})}}/>
+                                            <Input placeholder="输入公众号链接" disabled={!~(this.state.link.join('')).indexOf('2')} style={{width:140,marginLeft:15}} value={this.state.publicUrl} 
+                                                onChange={(e)=>{this.setState({publicUrl:e.target.value})}}/>
                                         </div>  
                                     </Checkbox.Group>
                                 </Form.Item>
@@ -356,17 +394,18 @@ export default Form.create()(class IndexForm extends React.Component {
                             <div className="clearBoth">
                                 <Form.Item  
                                     wrapperCol={{ span: 18,offset:4 }}>
-                                    <Button 
-                                        className="marginR_20"
-                                        type="primary">
-                                        发布
-                                    </Button>
                                     <Button
                                         className="marginR_20"
                                         type="primary"
-                                        htmlType="submit"
+                                        onClick={(e)=>{this.handleSubmit(e,0)}}
                                     >
                                         保存
+                                    </Button>
+                                    <Button 
+                                        className="marginR_20"
+                                        onClick={(e)=>{this.handleSubmit(e,1)}}
+                                        type="primary">
+                                       发布
                                     </Button>
                                     <Button onClick={this.handleCancel} type="danger" >取消</Button>
                                 </Form.Item>

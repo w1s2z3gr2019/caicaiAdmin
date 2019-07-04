@@ -1,4 +1,4 @@
-import {sex} from './dataDic.js';
+import {sex,topic} from './dataDic.js';
 import {message} from 'antd';
 
 export var dataTool= {
@@ -6,6 +6,17 @@ export var dataTool= {
         let val = '';
         if(x){
             sex.map((item)=>{
+                if(x===item.value){
+                    val=item.key
+                }
+            })
+        }
+        return val;
+    },
+    topicVal:function(x){
+        let val = '';
+        if(x||x===0){
+            topic.map((item)=>{
                 if(x===item.value){
                     val=item.key
                 }
