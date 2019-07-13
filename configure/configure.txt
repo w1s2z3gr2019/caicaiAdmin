@@ -1,5 +1,5 @@
 #域名配置
-url=http://www.xcustom.net
+url=https://www.xcustom.net
 
 
 

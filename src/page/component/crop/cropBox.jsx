@@ -4,13 +4,14 @@ import React, {
 import $ from 'jquery';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import {Button,Modal,Divider, message } from 'antd'
+import {Button,Modal,Divider, message ,Spin} from 'antd'
 
 class CropBox extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
+			loading:false,
 				src: '',
 				visible:false,
 	      close: this.props.close ? this.props.close : true,
@@ -27,7 +28,7 @@ class CropBox extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-			if (!this.props.visible && nextProps.visible){
+			if (!this.props.visible === nextProps.visible){
 				this.setState({
 						idValue:nextProps.idValue,
 						visible:nextProps.visible,
@@ -72,7 +73,9 @@ class CropBox extends Component {
 		for(let key in this.state.uploadData) {
 			fd.append(key, this.state.uploadData[key]);
 		}
-		
+		this.setState({
+			loading:true
+		})
 		$.ajax({
 		    url: window.url+this.state.url,
 		    type: 'POST',
@@ -81,21 +84,27 @@ class CropBox extends Component {
 		    processData: false,
 		    dataType: 'json',
 		    success: function (data) {
-					console.log(data);
 					if(data.error.length>0){
+						this.setState({
+							loading:false
+						})
 						message.warning(data.error[0].message);
 						return;
 					}
 	    		if(_this.props.getUrl) {
-	    			_this.props.getUrl(data.result);
+	    			_this.props.getUrl(data.data);
 	    		}
 	    		_this.setState({
+						loading:false,
 	    			close: true,
 	    			src: ''
 					})
-					this.props.callbackPass()
+					_this.props.callbackPass()
 		    },
 		    error: function(err) {
+					_this.setState({
+						loading:false
+					})
 		    	console.log(err);
 		    }
 		});
@@ -140,6 +149,7 @@ class CropBox extends Component {
 					footer={null}
 					width='800px'
 			>
+			<Spin tip="Loading" spinning={this.state.loading}>
 				<div className = "crop-box">
 					<div className="crop-box-content">
 						<div className="crop-area">
@@ -160,6 +170,7 @@ class CropBox extends Component {
 						</div>
 					</div>
 				</div>
+				</Spin>
 			</Modal>	
 		);
 	}

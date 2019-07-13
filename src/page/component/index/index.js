@@ -42,6 +42,14 @@ export class Index extends React.Component {
                     }
                 },
                 {
+                    title: '抽奖类型',
+                    dataIndex: 'drawType',
+                    key: 'drawType',
+                    render:(text)=>{
+                        return dataTool.luckDrawTypeVal(text);
+                    }  
+                },
+                {
                     title: '活动分类',
                     dataIndex: 'type',
                     key: 'type',
@@ -51,8 +59,8 @@ export class Index extends React.Component {
                 },
                 {
                     title: '奖品名称',
-                    dataIndex: 'userName',
-                    key: 'userName',
+                    dataIndex: 'prizeDescription',
+                    key: 'prizeDescription',
                     render:(text)=>{
                         return text&&text.length>8?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
@@ -60,13 +68,13 @@ export class Index extends React.Component {
                 },
                 {
                     title: '赞助',
-                    dataIndex: 'userId',
-                    key: 'userId'
+                    dataIndex: 'sponsor',
+                    key: 'sponsor'
                 },
                 {
-                    title: '发布时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime'
+                    title: '创建时间',
+                    dataIndex: 'createTimes',
+                    key: 'createTimes'
                 },
                 {
                     title: '截止时间',
@@ -77,6 +85,9 @@ export class Index extends React.Component {
                     title: '话题状态',
                     dataIndex: 'status',
                     key: 'status',
+                    render:text=>{
+                        return dataTool.statusVal(text)
+                    }
                 }
             ],
             dataSource: [],
@@ -114,6 +125,12 @@ export class Index extends React.Component {
                     let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
+                        let name=[],keys=[];
+                        let topicList = thisdata.topicList||[]
+                        topicList.map(item=>{
+                            name.push(item.content)
+                            keys.push(item.id)
+                        })
                         arrData.push({
                             key: i,
                             id: thisdata.id,
@@ -123,8 +140,8 @@ export class Index extends React.Component {
                             drawType: thisdata.drawType, 
                             title: thisdata.title,
                             content: thisdata.content,
-                            pictureUrl: thisdata.pictureUrl, 
-                            prizeUrl: thisdata.prizeUrl,
+                            pictureUrl:thisdata.pictureUrl&&[thisdata.pictureUrl], 
+                            prizeUrl: thisdata.pictureUrl&&[thisdata.prizeUrl],
                             sponsorshipType: thisdata.sponsorshipType,
                             sponsor: thisdata.sponsor, 
                             prizeDescription: thisdata.prizeDescription,
@@ -132,9 +149,13 @@ export class Index extends React.Component {
                             publicUrl: thisdata.publicUrl, 
                             createTime: thisdata.createTime,
                             updateTime: thisdata.updateTime,
-                            status: thisdata.status, 
+                            status: thisdata.status||1,
                             createTimes: thisdata.createTimes,
                             updateTimes: thisdata.updateTimes,
+                            endTime:thisdata.endTime,
+                            topicList:thisdata.topicList||[],
+                            name:name,
+                            keys:keys,
                         });
                     };
                 }
@@ -142,7 +163,7 @@ export class Index extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.totalCount
+                        total:data.data.totalCount
                     }
                 })
                 if(data.data&&!data.data.list.length){
@@ -182,11 +203,10 @@ export class Index extends React.Component {
         }
     }
     reset=()=>{
-        this.state.mobile='';
-        this.state.topic=undefined;
-        this.state.cycle=undefined;
-        this.state.luckType=undefined;
-        this.state.visitorName='';
+        this.state.title='';
+        this.state.type=undefined;
+        this.state.frequency=undefined;
+        this.state.drawType=undefined;
         this.loadData();
     }
     //搜索
@@ -304,8 +324,6 @@ export class Index extends React.Component {
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                         <div style={{float:'right',overflow:'hidden'}}>
-                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >发布</Button>
-                            <Button type="danger" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >撤回</Button>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
                             <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
                         </div>

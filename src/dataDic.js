@@ -103,4 +103,19 @@ module.exports={
             key:'赞助商'
         }
     ],
+    //发布状态
+    status:[
+        {
+            value:0,
+            key:'未发布'
+        },
+        {
+            value:1,
+            key:'已发布'
+        },
+        {
+            value:2,
+            key:'已撤销'
+        }
+    ]
 }

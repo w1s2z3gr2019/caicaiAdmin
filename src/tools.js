@@ -1,4 +1,4 @@
-import {sex,topic} from './dataDic.js';
+import {sex,topic,status,luckDrawType} from './dataDic.js';
 import {message} from 'antd';
 
 export var dataTool= {
@@ -13,10 +13,32 @@ export var dataTool= {
         }
         return val;
     },
+    luckDrawTypeVal:function(x){
+        let val = '';
+        if(x||x===0){
+            luckDrawType.map((item)=>{
+                if(x===item.value){
+                    val=item.key
+                }
+            })
+        }
+        return val;
+    },
     topicVal:function(x){
         let val = '';
         if(x||x===0){
             topic.map((item)=>{
+                if(x===item.value){
+                    val=item.key
+                }
+            })
+        }
+        return val;
+    },
+    statusVal:function(x){
+        let val = '';
+        if(x||x===0){
+            status.map((item)=>{
                 if(x===item.value){
                     val=item.key
                 }
@@ -52,5 +74,15 @@ export var dataTool= {
         let userInfo = window.localStorage.getItem("userInfo");
         let obj = JSON.parse(userInfo);
         return obj.token;
+    },
+    nowTime:function(){
+        let t =new Date(),
+            y = t.getFullYear(),
+            m = t.getMonth()+1>9?t.getMonth()+1:'0'+(t.getMonth()+1),
+            d =t.getDate()>9?t.getDate():'0'+t.getDate(),
+            h = t.getHours()>9?t.getHours():'0'+t.getHours(),
+            mm = t.getMinutes()>9?t.getMinutes():'0'+t.getMinutes(),
+            s = t.getSeconds()>9?t.getSeconds():'0'+t.getSeconds();
+            return y+'-'+m+'-'+d+' '+h+':'+mm+':'+s;
     }
 }

@@ -8,8 +8,9 @@ import {Button} from 'antd'
 class CropBlock extends Component {
 	constructor(props) {
 		super(props);
+		console.log(this.props.urlArr)
 		this.state = {
-			urlArr: this.props.imgArr ? this.props.imgArr : [],
+			urlArr: this.props.urlArr ? this.props.urlArr : [],
 			number: this.props.number ? this.props.number : '',
 			uploadData: this.props.uploadData ? this.props.uploadData : {},
 			aspectRatio: this.props.aspectRatio ? this.props.aspectRatio : '',
@@ -71,11 +72,16 @@ class CropBlock extends Component {
         this.setState({
             visible:false
         })
-    }
+	}
+	componentWillReceiveProps(nextProps) {
+			this.setState({
+				urlArr:	nextProps.urlArr
+			});
+	}
 	render() {
 		let imgList = this.state.urlArr.map((src, index) =>
 			<div key = {index} className="crop-img-block">
-				<img alt = "图片" className = "crop-img" title = "删除" src = {src} onClick = {this.delImg.bind(this, index)} />
+				<img alt = "图片" className = "crop-img" title = "删除" src = {'https://static.xcustom.net/upload'+src} onClick = {this.delImg.bind(this, index)} />
 			</div>
 		)
 		return (

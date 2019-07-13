@@ -40,7 +40,7 @@ export class PicturesWall extends React.Component {
             <div className="clearfix">
                 <Upload
                     beforeUpload={dataTool.beforeUploadFile}
-                    action={window.url + "/api/user/achievement/uploadPicture"}
+                    action={window.url + this.props.url}
                     data={{ 'sign': this.props.pictureSign }}
                     listType="picture-card"
                     fileList={fileList}
