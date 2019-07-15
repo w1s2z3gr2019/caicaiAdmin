@@ -111,11 +111,34 @@ module.exports={
         },
         {
             value:1,
-            key:'已发布'
+            key:'发布未确认'
         },
         {
             value:2,
+            key:'发布待开奖'
+        },
+        {
+            value:3,
+            key:'发布已开奖'
+        },
+        {
+            value:4,
             key:'已撤销'
-        }
+        },
+    ],
+    //发布状态
+    status_Bf:[
+        {
+            value:1,
+            key:'发布未确认'
+        },
+        {
+            value:2,
+            key:'发布待开奖'
+        },
+        {
+            value:3,
+            key:'发布已开奖'
+        },
     ]
 }

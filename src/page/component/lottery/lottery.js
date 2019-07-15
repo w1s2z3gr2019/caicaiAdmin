@@ -2,9 +2,9 @@ import React from 'react';
 import {Button,Input,Table,Spin,Icon,message,Tooltip,Select} from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import LotteryForm from './lotteryForm.js';
+import IndexForm from './lotteryForm.js';
 import {dataTool} from '../../../tools.js';
-import {luckDrawType,topic,cycle} from '../../../dataDic'
+import {luckDrawType,topic,status_Bf} from '../../../dataDic'
 import '../index/index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
@@ -17,6 +17,7 @@ export class Lottery extends React.Component {
             selectedRowKeys: [],
             selectedRows: [],
             loading:false,
+            circelData:[],
             visibleForm:false,
             pagination: {
                 defaultCurrent: 1,
@@ -31,35 +32,35 @@ export class Lottery extends React.Component {
                 }
             },
             minColumns:[
-                {
-                    title: '活动编号',
-                    dataIndex: 'visitorName',
-                    width:120,
-                    key: 'visitorName'
-                },  {
+                 {
                     title: '活动标题',
-                    dataIndex: 'visitorMobile',
-                    key: 'visitorMobile',
-                    width:140,
+                    dataIndex: 'title',
+                    key: 'title',
                     render:(text)=>{
                         return text&&text.length>8?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
                     }
                 },
                 {
-                    title: '活动分类',
-                    dataIndex: 'visitorCompany',
-                    key: 'visitorCompany',
-                    width:160,
+                    title: '抽奖类型',
+                    dataIndex: 'drawType',
+                    key: 'drawType',
                     render:(text)=>{
-                        return text&&text.length>8?
-                        <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
-                    }   
+                        return dataTool.luckDrawTypeVal(text);
+                    }  
+                },
+                {
+                    title: '活动分类',
+                    dataIndex: 'type',
+                    key: 'type',
+                    render:(text)=>{
+                        return dataTool.topicVal(text);
+                    }  
                 },
                 {
                     title: '奖品名称',
-                    dataIndex: 'userName',
-                    key: 'userName',
+                    dataIndex: 'prizeDescription',
+                    key: 'prizeDescription',
                     render:(text)=>{
                         return text&&text.length>8?
                         <Tooltip placement="topLeft" title={text}>{text.substr(0,8)+'...'}</Tooltip>:text
@@ -67,23 +68,29 @@ export class Lottery extends React.Component {
                 },
                 {
                     title: '赞助',
-                    dataIndex: 'userId',
-                    key: 'userId'
+                    dataIndex: 'sponsorshipType',
+                    key: 'sponsorshipType',
+                    render:(text,recard)=>{
+                        return text=='1'?recard.sponsor&&recard.sponsor.length>8?<Tooltip title={recard.sponsor}>{recard.sponsor.substr(0,8)+'...'}</Tooltip>:recard.sponsor:dataTool.sponsorDataVal(text)
+                    }
                 },
                 {
-                    title: '发布时间',
-                    dataIndex: 'beginTime',
-                    key: 'beginTime'
+                    title: '创建时间',
+                    dataIndex: 'createTimes',
+                    key: 'createTimes'
                 },
                 {
                     title: '截止时间',
-                    dataIndex: 'endTime',
-                    key: 'endTime',
+                    dataIndex: 'endTimes',
+                    key: 'endTimes',
                 },
                 {
                     title: '话题状态',
                     dataIndex: 'status',
                     key: 'status',
+                    render:text=>{
+                        return dataTool.statusVal(text)
+                    }
                 }
             ],
             dataSource: [],
@@ -100,36 +107,60 @@ export class Lottery extends React.Component {
             page:pageNo,
             loading: true
         });
-       
-
         $.ajax({
-            method: "post",
+            method: "get",
             dataType: "json",
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
+            url: window.url + "/api/admin/selectTC",
+            data: {
+                type:this.state.type,
+                frequency:this.state.frequency,
+                drawType:this.state.drawType,
+                status:1,
+                title:this.state.title,
+                pageNo: pageNo || 1,
+                pageSize:pageNub,
+                token:locaData.token
             },
-            url: window.url + "/visitWindows/getvisit",
-            data: JSON.stringify({
-                page: pageNo || 1,
-                rows:pageNub,
-                token:locaData.token,
-                signature:111,
-            }),
             success: function (data) {
-                let theArr = data.result,arrData=[];
-                if(data.state!==200){
-                    if(data.state!==513){
-                        message.warning(data.msg);
-                    }
+                let arrData=[];
+                if(data.error.length){
+                    message.warning(data.error[0].message);
                 }else{
+                    let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
+                        let name=[],keys=[];
+                        let topicList = thisdata.drawList||[]
+                        topicList.map(item=>{
+                            name.push(item.content)
+                            keys.push(item.id)
+                        })
                         arrData.push({
                             key: i,
-                            visitorMobile: thisdata.visitorMobile,
-                            userId: thisdata.userId, 
-                            visitorName: thisdata.visitorName,
-                            visitorCompany: thisdata.visitorCompany,
+                            id: thisdata.id,
+                            serialNumber: thisdata.serialNumber, 
+                            type: thisdata.type,
+                            frequency: thisdata.frequency,
+                            drawType: thisdata.drawType, 
+                            title: thisdata.title,
+                            content: thisdata.content,
+                            pictureUrl:thisdata.pictureUrl&&[thisdata.pictureUrl], 
+                            prizeUrl: thisdata.pictureUrl&&[thisdata.prizeUrl],
+                            sponsorshipType: thisdata.sponsorshipType,
+                            sponsor: thisdata.sponsor, 
+                            prizeDescription: thisdata.prizeDescription,
+                            appUrl: thisdata.appUrl,
+                            publicUrl: thisdata.publicUrl, 
+                            createTime: thisdata.createTime,
+                            updateTime: thisdata.updateTime,
+                            status: thisdata.status,
+                            createTimes: thisdata.createTimes,
+                            updateTimes: thisdata.updateTimes,
+                            endTimes:thisdata.endTimes,
+                            drawTimes:thisdata.drawTimes,
+                            topicList:thisdata.drawList||[],
+                            name:name,
+                            keys:keys,
                         });
                     };
                 }
@@ -137,10 +168,10 @@ export class Lottery extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.data.totalCount
                     }
                 })
-                if(data.result&&!data.result.length){
+                if(data.data&&!data.data.list.length){
 					this.setState({
                         pagination:{
                             current:0,
@@ -177,11 +208,10 @@ export class Lottery extends React.Component {
         }
     }
     reset=()=>{
-        this.state.mobile='';
-        this.state.topic=undefined;
-        this.state.cycle=undefined;
-        this.state.luckType=undefined;
-        this.state.visitorName='';
+        this.state.title='';
+        this.state.type=undefined;
+        this.state.frequency=undefined;
+        this.state.drawType=undefined;
         this.loadData();
     }
     //搜索
@@ -202,10 +232,40 @@ export class Lottery extends React.Component {
             selectedRowKeys: [record.key]
         });
     }
+    //周期字典数据
+    cicleData=()=>{
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
+        $.ajax({
+            method: "get",
+            dataType: "json",
+            url: window.url + "/api/admin/topicSponsorshipList",
+            data: {
+                pageNo:1,
+                pageSize:9999,
+                token:locaData.token
+            },
+            success: function (data) {
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
+                    return;
+                }
+                this.setState({
+                    circelData:data.data
+                })
+            }.bind(this),
+            error:function(){
+                this.setState({
+                    loading:false
+                });
+                message.error('系统错误,请联系管理员.')
+            }.bind(this)
+        })
+    }
     componentWillUnmount(){
     }
     componentWillMount(){
-        // this.loadData();
+        this.loadData();
+        this.cicleData();
     }
     componentDidUpdate(){
        
@@ -226,18 +286,19 @@ export class Lottery extends React.Component {
 
         };
         const hasSelected = this.state.selectedRowKeys.length > 0;
+        const circelData = this.state.circelData||[];
         return (
             <div className="wrapContent">
                 <Spin tip="数据加载中,请稍候..." spinning={this.state.loading}>
                     <div className="user-search">
                         <Input placeholder="活动标题" 
                             className="inpWin"
-                            value={this.state.mobile}
-                            onChange={(e) => { this.setState({ mobile: e.target.value }); }} />
+                            value={this.state.title}
+                            onChange={(e) => { this.setState({ title: e.target.value }); }} />
                         <Select placeholder="抽奖类型" 
                             className="inpWin"
-                            value={this.state.luckType}
-                            onChange={(e)=>{this.setState({luckType:e})}}
+                            value={this.state.drawType}
+                            onChange={(e)=>{this.setState({drawType:e})}}
                             >
                             { 
                                 luckDrawType.map(function (item) {
@@ -245,27 +306,40 @@ export class Lottery extends React.Component {
                                 })
                             }
                         </Select>
-                        <Select className="inpWin" value={this.state.topic} onChange={(e)=>{this.setState({topic:e})}} placeholder="话题分类" >
+                        <Select className="inpWin" 
+                            value={this.state.type} 
+                            onChange={(e)=>{this.setState({type:e})}} 
+                            placeholder="话题分类" >
                             { 
                                 topic.map(function (item) {
                                     return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>
-                        <Select  className="inpWin" value={this.state.cycle} onChange={(e)=>{this.setState({cycle:e})}}  placeholder="周期分类" >
+                        <Select  className="inpWin" 
+                            value={this.state.frequency} 
+                            onChange={(e)=>{this.setState({frequency:e})}} 
+                            placeholder="周期分类" >
                             { 
-                                cycle.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
+                                circelData.map(function (item) {
+                                    return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                })
+                            }
+                        </Select>
+                        <Select  className="inpWin" 
+                            value={this.state.status} 
+                            onChange={(e)=>{this.setState({status:e})}} 
+                            placeholder="状态" >
+                            { 
+                                status_Bf.map(function (item) {
+                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
-                        <div style={{float:'right'}}>
-                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >发布</Button>
-                            <Button type="danger" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >撤回</Button>
-                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
-                            <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
+                        <div style={{float:'right',overflow:'hidden'}}>
+                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >开奖设置</Button>
                         </div>
                     </div>
                     <div className="patent-table">
@@ -282,7 +356,8 @@ export class Lottery extends React.Component {
                             />
                     </div>
                 </Spin>
-                <LotteryForm 
+                <IndexForm 
+                    circelData={circelData}
                     visible={this.state.visibleForm}
                     callbackPass={this.callbackPass}
                     data={this.state.theData}

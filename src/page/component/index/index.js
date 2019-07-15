@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import IndexForm from './indexForm.js';
 import {dataTool} from '../../../tools.js';
-import {luckDrawType,topic,cycle} from '../../../dataDic'
+import {luckDrawType,topic,status} from '../../../dataDic'
 import './index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
@@ -68,8 +68,11 @@ export class Index extends React.Component {
                 },
                 {
                     title: '赞助',
-                    dataIndex: 'sponsor',
-                    key: 'sponsor'
+                    dataIndex: 'sponsorshipType',
+                    key: 'sponsorshipType',
+                    render:(text,recard)=>{
+                        return text=='1'?recard.sponsor&&recard.sponsor.length>8?<Tooltip title={recard.sponsor}>{recard.sponsor.substr(0,8)+'...'}</Tooltip>:recard.sponsor:dataTool.sponsorDataVal(text)
+                    }
                 },
                 {
                     title: '创建时间',
@@ -78,8 +81,8 @@ export class Index extends React.Component {
                 },
                 {
                     title: '截止时间',
-                    dataIndex: 'endTime',
-                    key: 'endTime',
+                    dataIndex: 'endTimes',
+                    key: 'endTimes',
                 },
                 {
                     title: '话题状态',
@@ -126,7 +129,7 @@ export class Index extends React.Component {
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         let name=[],keys=[];
-                        let topicList = thisdata.topicList||[]
+                        let topicList = thisdata.drawList||[]
                         topicList.map(item=>{
                             name.push(item.content)
                             keys.push(item.id)
@@ -149,11 +152,12 @@ export class Index extends React.Component {
                             publicUrl: thisdata.publicUrl, 
                             createTime: thisdata.createTime,
                             updateTime: thisdata.updateTime,
-                            status: thisdata.status||1,
+                            status: thisdata.status,
                             createTimes: thisdata.createTimes,
                             updateTimes: thisdata.updateTimes,
-                            endTime:thisdata.endTime,
-                            topicList:thisdata.topicList||[],
+                            endTimes:thisdata.endTimes,
+                            drawTimes:thisdata.drawTimes,
+                            topicList:thisdata.drawList||[],
                             name:name,
                             keys:keys,
                         });
@@ -318,6 +322,16 @@ export class Index extends React.Component {
                             { 
                                 circelData.map(function (item) {
                                     return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                })
+                            }
+                        </Select>
+                        <Select  className="inpWin" 
+                            value={this.state.status} 
+                            onChange={(e)=>{this.setState({status:e})}} 
+                            placeholder="状态" >
+                            { 
+                                status.map(function (item) {
+                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>

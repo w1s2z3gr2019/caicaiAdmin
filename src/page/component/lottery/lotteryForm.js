@@ -1,11 +1,12 @@
 import React from 'react';
-import {Form,Button,Modal, message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
+import {Form,Button,Modal, DatePicker,Radio,message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import {luckDrawType,topic,cycle,sponsorData} from '../../../dataDic.js';
+import {luckDrawType,topic,sponsorData} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 import '../index/index.less';
 import CropBlock from '../crop/cropBlock';
+import moment from 'moment';
 
 let id = 0;
 const { TextArea } = Input;
@@ -13,13 +14,19 @@ export default Form.create()(class LotteryForm extends React.Component {
     constructor(props){
         super(props);
         this.state={
+            keys:[],
+            names:[],
             visible:false,
             loading:false,
-            luckType:1,
-            topic:1,
-            cycle:1,
-            sponsor:1,
-            link:[]
+            frequency:1,
+            type:0,
+            drawType:0,
+            sponsorshipType:0,
+            pictureUrl:[],
+            link:[],
+            prizeUrl:[],
+            beginTime:dataTool.nowTime(),
+            endTime:dataTool.nowTime(),
         }
     }
     showModal = () => {
@@ -32,7 +39,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             visible:true
         })
     }
-    handleSubmit=(e)=>{
+    handleSubmit=(e,status)=>{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             console.log(values)
@@ -40,20 +47,48 @@ export default Form.create()(class LotteryForm extends React.Component {
                 this.setState({
                     loading:true
                 })
+                let topicList1=[],topicList2=[];
+                if(values.keys.length){
+                    values.names.map((item,index)=>{
+                        topicList1.push({
+                            id:(this.props.data.id&&(this.props.data.keys.length>index))?this.props.data.keys[index]:'',
+                            content:item
+                        })
+                    })
+                }
+                topicList2.push({id:this.props.data.id&&this.props.data.keys.length>0?this.props.data.keys[0]:'',content:this.state.leftVal});
+                topicList2.push({id:this.props.data.id&&this.props.data.keys.length>1?this.props.data.keys[1]:'',content:this.state.rightVal});
+                let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC'
                 $.ajax({
                     type: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
                     dataType: "json",
-                    url: window.url+'/visitWindows/visitorCheckin' ,
-                    data: JSON.stringify({
+                    url: window.url+api ,
+                    data: {
+                        id:this.props.data.id,
                         token:this.state.token,
-                        signature:111,
-                    }),
+                        type:this.state.type,
+                        frequency:this.state.frequency,
+                        drawType:this.state.drawType,
+                        title:values.title,
+                        content:this.state.content,
+                        pictureUrl:this.state.pictureUrl.length&&this.state.pictureUrl.join(','),
+                        prizeUrl:this.state.prizeUrl.length&&this.state.prizeUrl.join(','),
+                        sponsorshipType:this.state.sponsorshipType,
+                        sponsor:this.state.sponsorshipType?this.state.sponsor:null,
+                        prizeDescription:values.prizeDescription,
+                        appUrl:this.state.appUrl,
+                        publicUrl:this.state.publicUrl,
+                        status:status,
+                        beginTime:this.state.beginTime,
+                        endTime:this.state.endTime,
+                        topicList:this.state.drawType=='2'?JSON.stringify(topicList1):JSON.stringify(topicList2)
+                    },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
+                        if (data.error.length>0) {
+                            this.setState({
+                                loading:false
+                            })
+                            message.warning(data.error[0].message);
                             return ;
                         };
                         this.setState({
@@ -65,12 +100,11 @@ export default Form.create()(class LotteryForm extends React.Component {
                     }.bind(this),
                     error:function(a,b,c){
                         message.error('数据访问异常')
-                    }
-                }).always(function () {
-                    this.setState({
-                        loading: false
-                    });
-                }.bind(this));
+                        this.setState({
+                            loading:false
+                        })
+                    }.bind(this)
+                })
             }
         });
     }
@@ -94,7 +128,94 @@ export default Form.create()(class LotteryForm extends React.Component {
           keys: keys.filter(key => key !== k),
         });
     };
-    
+    //撤销
+    cancel=()=>{
+        this.setState({
+            loading:true
+        })
+        const _this = this;
+        $.ajax({
+            method:'post',
+            dataType:'josn',
+            url:window.url+'/api/admin/releaseTC',
+            data:{
+                id:this.props.data.id,
+                status:0
+            },
+            success:function(data){
+                if (data.error.length>0) {
+                    this.setState({
+                        loading:false
+                    })
+                    message.warning(data.error[0].message);
+                    return ;
+                };
+                _this.setState({
+                    loading:false
+                })
+                message.success('撤销成功')
+                this.props.callbackPass();
+            },
+            fail:function(){
+                _this.setState({
+                    loading:false
+                })
+            }
+        })
+    }
+     //获取列表数据；
+     loadData=(pageNo=1) => {
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
+        this.setState({
+            loading: true
+        });
+        $.ajax({
+            method: "get",
+            dataType: "json",
+            url: window.url + "/api/admin/selectUser",
+            data:{
+                pageNo: pageNo || 1,
+                pageSize:9999999,
+                name:this.state.name,
+                token:locaData.token
+            },
+            success: function (data) {
+                let arrData=[];
+                if(data.error.length>0){
+                    message.warning(data.error[0].message);
+                }else{
+                    let theArr = data.data.list;
+                    for (let i = 0; i < theArr.length; i++) {
+                        let thisdata = theArr[i];
+                        arrData.push({
+                            key: i,
+                            tid:thisdata.tid,
+                            name: thisdata.name,
+                            identifyName: thisdata.identifyName, 
+                            province: thisdata.province,
+                            city: thisdata.city,
+                            area: thisdata.area,
+                            citys:thisdata.province+'-'+thisdata.city+'-'+thisdata.area,
+                            address: thisdata.address,
+                            contactNumber: thisdata.contactNumber,
+                            countN: thisdata.countN,
+                            countY: thisdata.countY,
+                        });
+                    };
+                }
+                this.setState({
+                    loading:false,
+                    dataSource: arrData,
+                });
+            }.bind(this),
+            error:function(a,b,c){
+                this.setState({
+                    loading:false
+                })
+                message.error('数据访问异常');
+            }.bind(this)
+        });
+    }
     add = () => {
         const { form } = this.props;
         // can use data-binding to get
@@ -105,17 +226,100 @@ export default Form.create()(class LotteryForm extends React.Component {
         form.setFieldsValue({
           keys: nextKeys,
         });
-    };
-    
+    }; 
     componentWillReceiveProps(nextProps){
         if (!this.props.visible && nextProps.visible){
+            if(!nextProps.data.id){
+                this.setState({
+                    pictureUrl:[],
+                    prizeUrl:[],
+                    keys:[],
+                    name:[],
+                    type:0,
+                    drawType:0,
+                    sponsorshipType:undefined,
+                    leftVal:'',
+                    rightVal:'',
+                    frequency:(this.props.circelData)[0].id,
+                    sponsor:'',
+                    content:'',
+                    link:[],
+                    appUrl:'',
+                    beginTime:dataTool.nowTime(),
+                    endTime:dataTool.nowTime(),
+                    publicUrl:''
+                });
+                this.props.form.resetFields();
+            }else{
+                this.loadData();
+                let theD = nextProps.data||{};
+                let link=[];
+                if(theD.appUrl){
+                    link.push('1')
+                }
+                if(theD.publicUrl){
+                    link.push('2')
+                }
+                this.setState({
+                    pictureUrl:theD.pictureUrl,
+                    prizeUrl:theD.prizeUrl,
+                    keys:theD.keys,
+                    name:theD.name,
+                    type:theD.type,
+                    drawType:theD.drawType,
+                    sponsorshipType:theD.sponsorshipType,
+                    leftVal:(theD.name.length)>0?theD.name[0]:'',
+                    rightVal:(theD.name.length)>1?theD.name[1]:'',
+                    frequency:theD.frequency,
+                    sponsor:theD.sponsor,
+                    content:theD.content,
+                    link:link,
+                    beginTime:theD.drawTimes,
+                    endTime:theD.drawTimes,
+                    appUrl:theD.appUrl,
+                    topicList:theD.topicList,
+                    publicUrl:theD.publicUrl
+                });
+            }
             this.setState({
-                visible:nextProps.visible,
-            });
-            this.props.form.resetFields();
+                visible:nextProps.visible
+            })
         }
     }
-
+    kaiJ=()=>{
+        this.setState({
+            loading:true
+        })
+        const _this = this;
+        $.ajax({
+            method:'get',
+            dataType:'josn',
+            url:window.url+'/api/admin/pushPrizeGuessing',
+            data:{
+                id:this.props.data.id,
+                winId:this.state.userId
+            },
+            success:function(data){
+                if (data.error.length>0) {
+                    this.setState({
+                        loading:false
+                    })
+                    message.warning(data.error[0].message);
+                    return ;
+                };
+                _this.setState({
+                    loading:false
+                })
+                message.success('开奖成功')
+                this.props.callbackPass();
+            },
+            fail:function(){
+                _this.setState({
+                    loading:false
+                })
+            }
+        })
+    }
     componentDidMount(a,b) {
         this.state.token=dataTool.token();
     }
@@ -140,195 +344,183 @@ export default Form.create()(class LotteryForm extends React.Component {
               sm: { span: 20, offset: 4 },
             },
           };
-        getFieldDecorator('keys', { initialValue: [] });
+        getFieldDecorator('keys', { initialValue: this.state.keys });
         const keys = getFieldValue('keys');
         let theData = this.props.data||{};
-        const formItems = keys.map((k, index) => (
-            <Form.Item
-              {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-              label={index === 0 ? '观点': ''}
-              required={false}
-              key={k}
-            >
-              {getFieldDecorator(`names[${k}]`, {
-                validateTrigger: ['onChange', 'onBlur'],
-                rules: [
-                  {
-                    required: true,
-                    whitespace: true,
-                    message: "请输入观点",
-                  },
-                ],
-              })(<Input placeholder="请输入观点" style={{ width: '60%', marginRight: 8 }} />)}
-              {keys.length > 1 ? (
-                <Icon
-                  className="dynamic-delete-button"
-                  type="minus-circle-o"
-                  onClick={() => this.remove(k)}
-                />
-              ) : null}
-            </Form.Item>
-          ));
+          const circelData =this.props.circelData||[];
+          let frequency;
+          circelData.map(item=>{
+            if(theData.frequency==item.id){
+                frequency=item.title
+            }
+          })
+         const dataSource = this.state.dataSource||[];
+         const topicList=this.state.topicList||[];
+         console.log(topicList)
         return (
           <div> 
                 <Modal
-                    title={!theData.activeId?'活动创建':'活动修改'}
+                    title={!theData.id?'活动创建':'活动修改'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
                     width='800px'
                 >
-                <Form  layout="horizontal" onSubmit={this.handleSubmit.bind(this)}>
+                <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
-
+                        <div>
                             <div className="clearBoth"> 
-                                <Form.Item 
+                            <Form.Item 
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="话题分类"
+                            >
+                                <span className="selMore">{dataTool.topicVal(theData.type)+' - '+frequency+' - '+dataTool.luckDrawTypeVal(theData.drawType)}</span>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth"> 
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="活动标题"
+                            >
+                               <span>活动标题</span>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth">
+                            <Form.Item
+                                labelCol={{ span: 4 }}
+                                wrapperCol={{ span: 18 }}
+                                label="主题图片" >
+                                {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.pictureUrl[0]}/>:''}
+                            </Form.Item>
+                        </div>
+                        {this.state.drawType!==2?<div className="clearBoth">
+                            <Form.Item 
+                                wrapperCol={{span:12}}
+                                labelCol={{span:4}}
+                                label="类型配置"
+                                >
+                                <Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
+                                {(topicList).map((item,index)=>{
+                                    return  <Radio value={item.id} key={index}>{item.content}</Radio>
+                                })}
+                                </Radio.Group>
+                            </Form.Item>
+                        </div>:<div className="clearBoth">
+                            <Form.Item 
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="观点"
+                            >
+                                <Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
+                                    {(topicList).map((item,index)=>{
+                                        return  <Radio value={item.id} key={index}>{item.content}</Radio>
+                                    })}
+                                </Radio.Group>
+                            </Form.Item>
+                        </div>}
+                        <Divider />
+                        <div className="clearBoth"> 
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="奖品名称"
+                            >
+                                <span>{theData.prizeDescription}</span>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth"> 
+                            <Form.Item
                                     wrapperCol={{span:18}}
                                     labelCol={{span:4}}
-                                    label="话题分类"
+                                    label="赞助"
                                 >
-                                    <span className="selMore">每日 - 娱乐</span>
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth"> 
-                                <Form.Item
-                                    wrapperCol={{span:18}}
-                                    labelCol={{span:4}}
-                                    label="活动标题"
-                                >
-                                   <span>活动标题</span>
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth">
-                                <Form.Item
-                                    labelCol={{ span: 4 }}
-                                    wrapperCol={{ span: 18 }}
-                                    label="主题图片" >
-                                    <CropBlock number = {5} aspectRatio = {2/1} url = '/manage/manager/upload.do' idValue="imgLoad1" uploadData = {{"type": 'item'}} urlArr = {[]} />
-                                </Form.Item>
-                            </div>
-                            {this.state.luckType!==3?<div className="clearBoth">
-                                <Form.Item 
-                                    wrapperCol={{span:12}}
-                                    labelCol={{span:4}}
-                                    label="类型配置"
-                                    >
-                                    <div className="left" style={{marginRight:10}}>
-                                        <span>甲方 - </span><Input placeholder="输入" style={{width:60}} value={this.state.leftVal} onChange={(e)=>{this.setState({leftVal:e.target.value})}}/>
-                                    </div>
-                                    <div className="left">
-                                        <span>乙方 - </span><Input placeholder="输入" style={{width:60}} value={this.state.rightVal} onChange={(e)=>{this.setState({rightVal:e.target.value})}}/>
-                                    </div>
-                                </Form.Item>
-                            </div>:<div className="clearBoth">
-                                {formItems}
-                                <Form.Item {...formItemLayoutWithOutLabel}>
-                                    <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-                                        <Icon type="plus" />添加观点
-                                    </Button>
-                                </Form.Item>
-                            </div>}
-                            <Divider />
-                            <div className="clearBoth"> 
-                                <Form.Item
-                                    wrapperCol={{span:18}}
-                                    labelCol={{span:4}}
-                                    label="奖品名称"
-                                >
-                                    {getFieldDecorator('title', {
-                                        rules: [{
-                                            required: true, message: '请填写奖品名称',
-                                        }],
-                                        initialValue: theData.title
-                                    })(
-                                        <Input style={{width:240}} placeholder="奖品名称" maxLength={500}/>
-                                    )}
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth"> 
-                                <Form.Item
-                                        wrapperCol={{span:18}}
-                                        labelCol={{span:4}}
-                                        label="赞助"
-                                    >
-                                    <span>
-                                        <Select value={this.state.sponsor} onChange={(e)=>{this.setState({sponsor:e})}} style={{width:120}} placeholder="赞助" >
-                                            { 
-                                                sponsorData.map(function (item) {
-                                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                                })
-                                            }
-                                        </Select>
-                                        {this.state.sponsor===2?<Input placeholder="赞助伤名称" style={{width:140,marginLeft:15}} value={this.state.sponsorName} onChange={(e)=>{this.setState({sponsorName:e})}}/>:""}
-                                    </span>
-                                </Form.Item>       
-                            </div>
-                            <div className="clearBoth">
-                                <Form.Item
-                                    labelCol={{ span: 4 }}
-                                    wrapperCol={{ span: 18 }}
-                                    label="奖品图片" >
-                                    <CropBlock 
-                                    number = {1} 
-                                    aspectRatio = {2/1} 
-                                    idValue="imgLoad2" 
-                                    url = '/manage/manager/upload.do' 
-                                    uploadData = {{"type": 'item'}} 
-                                    urlArr = {[]} 
-                                    />
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth"> 
-                                <Form.Item
-                                    wrapperCol={{span:18}}
-                                    labelCol={{span:4}}
-                                    label="链接"
-                                >
-                                    <Checkbox.Group style={{ width: '100%' }} 
-                                            value={this.state.link} 
-                                            onChange={(e)=>{console.log(e);this.setState({link:e})}}>
-                                        <div style={{marginBottom:10,height:32}}>
-                                            <Checkbox value="1">小程序</Checkbox> 
-                                           <Input disabled={!~(this.state.link.join('')).indexOf('1')} placeholder="输入小程序链接" style={{width:140,marginLeft:15}} value={this.state.procedures} 
-                                                onChange={(e)=>{this.setState({procedures:e})}}/>
-                                        </div>
-                                        <div style={{marginBottom:10,height:32}}> 
-                                            <Checkbox value="2">公众号</Checkbox>   
-                                            <Input placeholder="输入公众号链接" disabled={!~(this.state.link.join('')).indexOf('2')} style={{width:140,marginLeft:15}} value={this.state.publicNumber} 
-                                                onChange={(e)=>{this.setState({publicNumber:e})}}/>
-                                        </div>  
-                                    </Checkbox.Group>
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth">
-                                <Form.Item
-                                    wrapperCol={{span:18}}
-                                    labelCol={{span:4}}
-                                    label="活动内容"
-                                >
-                                    <TextArea rows={4} 
-                                        value={this.state.content} 
-                                        onChange={(e)=>{this.setState({content:e.target.value})}}/>
-                                </Form.Item>
-                            </div>
-                            <div className="clearBoth">
-                                <Form.Item  
-                                    wrapperCol={{ span: 18,offset:4 }}>
-                                    <Button 
-                                        className="marginR_20"
-                                        type="primary">
-                                        发布
-                                    </Button>
-                                    <Button
-                                        className="marginR_20"
-                                        type="primary"
-                                        htmlType="submit"
-                                    >
-                                        保存
-                                    </Button>
-                                    <Button onClick={this.handleCancel} type="danger" >取消</Button>
-                                </Form.Item>
+                                {this.state.sponsorshipType===1?<span>赞助商-{this.state.sponsor}</span>:this.state.sponsorshipType===0?'猜奖官方':''}
+                            </Form.Item>       
+                        </div>
+                        <div className="clearBoth">
+                            <Form.Item
+                                labelCol={{ span: 4 }}
+                                wrapperCol={{ span: 18 }}
+                                label="奖品图片" >
+                               {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.prizeUrl[0]}/>:''}
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth"> 
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="链接"
+                            >
+                                {theData.appUrl?<div>小程序 - {theData.appUrl}</div>:''}
+                                {theData.publicUrl?<div>公众号 - {theData.publicUrl}</div>:''}
+                            </Form.Item>
+                        </div>
+                        
+                        <div className="clearBoth">
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="活动内容"
+                            >
+                               <span>{theData.content}</span>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth"> 
+                            <Form.Item
+                                style={{width:'50%',display:'inline-block'}}
+                                wrapperCol={{span:14}}
+                                labelCol={{span:8}}
+                                label="开奖时间"
+                            >
+                                <span>{this.state.beginTime}</span>
+                            </Form.Item>
+                            <Form.Item
+                                style={{width:'50%',display:'inline-block'}}
+                                wrapperCol={{span:14}}
+                                labelCol={{span:8}}
+                                label="截止时间"
+                            >
+                            <span>{this.state.endTime}</span>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth">
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="指定中奖人"
+                            >
+                              <Select 
+                                    placeholder="未指定则随机抽取中奖人"
+                                    style={{width:200}}
+                                    onChange={(e)=>{this.setState({
+                                         winId:e
+                                    })}} 
+                                    value={this.state.winId}>
+                                    {
+                                        dataSource.map((item,index)=>{
+                                            return <Select.Option key={index} value={item.tid}>{item.name}</Select.Option>
+                                        })
+                                    }
+                              </Select>
+                            </Form.Item>
+                        </div>
+                        <div className="clearBoth">
+                            <Form.Item  
+                                wrapperCol={{ span: 18,offset:4 }}>
+                                <Button className="marginR_20"   onClick={this.kaiJ}
+                                    type="primary">
+                                    开奖
+                                </Button>
+                                <Button className="marginR_20" onClick={this.cancel}
+                                    type="danger">
+                                    撤销
+                                </Button>
+                                <Button onClick={this.handleCancel} >取消</Button>
+                            </Form.Item>
+                        </div>
                             </div>
                         </Spin>
                     </Form>

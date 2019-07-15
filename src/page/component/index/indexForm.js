@@ -59,8 +59,6 @@ export default Form.create()(class IndexForm extends React.Component {
                 }
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>0?this.props.data.keys[0]:'',content:this.state.leftVal});
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>1?this.props.data.keys[1]:'',content:this.state.rightVal});
-                console.log(topicList2)
-                console.log(topicList1)
                 let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC'
                 $.ajax({
                     type: "POST",
@@ -82,8 +80,8 @@ export default Form.create()(class IndexForm extends React.Component {
                         appUrl:this.state.appUrl,
                         publicUrl:this.state.publicUrl,
                         status:status,
-                        beginTime:this.state.beginTime,
-                        endTime:this.state.endTime,
+                        drawTimes:this.state.beginTime,
+                        endTimes:this.state.endTime,
                         topicList:this.state.drawType=='2'?JSON.stringify(topicList1):JSON.stringify(topicList2)
                     },
                     success:function(data){
@@ -133,7 +131,38 @@ export default Form.create()(class IndexForm extends React.Component {
     };
     //撤销
     cancel=()=>{
-
+        this.setState({
+            loading:true
+        })
+        const _this = this;
+        $.ajax({
+            method:'post',
+            dataType:'josn',
+            url:window.url+'/api/admin/releaseTC',
+            data:{
+                id:this.props.data.id,
+                status:0
+            },
+            success:function(data){
+                if (data.error.length>0) {
+                    this.setState({
+                        loading:false
+                    })
+                    message.warning(data.error[0].message);
+                    return ;
+                };
+                _this.setState({
+                    loading:false
+                })
+                message.success('撤销成功')
+                this.props.callbackPass();
+            },
+            fail:function(){
+                _this.setState({
+                    loading:false
+                })
+            }
+        })
     }
     add = () => {
         const { form } = this.props;
@@ -192,9 +221,10 @@ export default Form.create()(class IndexForm extends React.Component {
                     sponsor:theD.sponsor,
                     content:theD.content,
                     link:link,
-                    beginTime:theD.beginTime||dataTool.nowTime(),
-                    endTime:theD.endTime||dataTool.nowTime(),
+                    beginTime:theD.drawTimes||dataTool.nowTime(),
+                    endTime:theD.endTimes||dataTool.nowTime(),
                     appUrl:theD.appUrl,
+                    topicList:theD.topicList,
                     publicUrl:theD.publicUrl
                 });
             }
@@ -277,7 +307,7 @@ export default Form.create()(class IndexForm extends React.Component {
                 >
                 <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
-                            {this.props.data&&this.props.data.status!='1'?<div><div className="clearBoth"> 
+                            {this.props.data&&(this.props.data.status=='0'||this.props.data.status=='4')?<div><div className="clearBoth"> 
                                 <Form.Item 
                                     wrapperCol={{span:18}}
                                     labelCol={{span:4}}
@@ -537,7 +567,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.pictureUrl[0]}/>:''}
                             </Form.Item>
                         </div>
-                        {this.state.luckType!==3?<div className="clearBoth">
+                        {this.state.drawType!==2?<div className="clearBoth">
                             <Form.Item 
                                 wrapperCol={{span:12}}
                                 labelCol={{span:4}}
@@ -557,8 +587,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                 label="观点"
                             >
                                 {
-                                    (this.state.name).map(item=>{
-                                        return <div>{item}</div>
+                                    (this.state.name).map((item,index)=>{
+                                        return <div key={index}>{item}</div>
                                     })
                                 }
                             </Form.Item>
@@ -596,8 +626,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="链接"
                             >
-                                {!~(this.state.link.join('')).indexOf('1')?<div>小程序 - {theData.appUrl}</div>:''}
-                                {!~(this.state.link.join('')).indexOf('2')?<div>公众号 - {theData.publicUrl}</div>:''}
+                                {theData.appUrl?<div>小程序 - {theData.appUrl}</div>:''}
+                                {theData.publicUrl?<div>公众号 - {theData.publicUrl}</div>:''}
                             </Form.Item>
                         </div>
                         <div className="clearBoth">

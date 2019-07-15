@@ -58,9 +58,7 @@ class CropBox extends Component {
 	      return;
 	    }
 			let img64Data = this.cropper.getCroppedCanvas().toDataURL();
-			console.log(img64Data)
 			let imgblobDate = this.convertBase64UrlToBlob(img64Data);
-			console.log(imgblobDate)
 	    this.submitUpload(imgblobDate);
 	}
 
