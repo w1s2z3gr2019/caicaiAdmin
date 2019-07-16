@@ -143,8 +143,8 @@ export class Index extends React.Component {
                             drawType: thisdata.drawType, 
                             title: thisdata.title,
                             content: thisdata.content,
-                            pictureUrl:thisdata.pictureUrl&&[thisdata.pictureUrl], 
-                            prizeUrl: thisdata.pictureUrl&&[thisdata.prizeUrl],
+                            pictureUrl:(thisdata.pictureUrl&&thisdata.pictureUrl!='0')&&[thisdata.pictureUrl], 
+                            prizeUrl: thisdata.prizeUrl&&thisdata.prizeUrl!='0'&&[thisdata.prizeUrl],
                             sponsorshipType: thisdata.sponsorshipType,
                             sponsor: thisdata.sponsor, 
                             prizeDescription: thisdata.prizeDescription,
@@ -200,10 +200,11 @@ export class Index extends React.Component {
     }
     callbackPass=(state)=>{
         this.setState({
+            theData:{},
             visibleForm:false
         })
         if(state){
-            this.loadData();
+            this.loadData(this.state.page);
         }
     }
     reset=()=>{

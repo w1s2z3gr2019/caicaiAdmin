@@ -133,15 +133,15 @@ export default Form.create()(class IndexForm extends React.Component {
     cancel=()=>{
         this.setState({
             loading:true
-        })
-        const _this = this;
+        });
         $.ajax({
             method:'post',
-            dataType:'josn',
+            dataType:'json',
             url:window.url+'/api/admin/releaseTC',
             data:{
                 id:this.props.data.id,
-                status:0
+                status:0,
+                token:this.state.token,
             },
             success:function(data){
                 if (data.error.length>0) {
@@ -151,17 +151,19 @@ export default Form.create()(class IndexForm extends React.Component {
                     message.warning(data.error[0].message);
                     return ;
                 };
-                _this.setState({
+                this.setState({
+                    visible: false,
+                    loading:false
+                });
+                message.success('撤销成功');
+                this.props.callbackPass(true);
+            }.bind(this),
+            error:function(a,b,c){
+                message.error('数据访问异常')
+                this.setState({
                     loading:false
                 })
-                message.success('撤销成功')
-                this.props.callbackPass();
-            },
-            fail:function(){
-                _this.setState({
-                    loading:false
-                })
-            }
+            }.bind(this)
         })
     }
     add = () => {
@@ -259,7 +261,10 @@ export default Form.create()(class IndexForm extends React.Component {
           };
         getFieldDecorator('keys', { initialValue: this.state.keys });
         const keys = getFieldValue('keys');
+        
         let theData = this.props.data||{};
+        console.log(this.state.name)
+        console.log(this.state.keys)
         const formItems = keys.map((k, index) => (
             <Form.Item
               {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
@@ -276,7 +281,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     message: "请输入观点",
                   },
                 ],
-                initialValue: this.state.names[k-1]
+                initialValue: (theData.name&&theData.name.length)>index?(theData.name)[index]:''
               })(<Input placeholder="请输入观点" style={{ width: '60%', marginRight: 8 }} />)}
               {keys.length > 1 ? (
                 <Icon
@@ -294,7 +299,7 @@ export default Form.create()(class IndexForm extends React.Component {
                 frequency=item.title
             }
           })
-          console.log(dataTool.nowTime())
+         console.log(this.props.data)
         return (
           <div> 
                 <Modal
@@ -307,7 +312,7 @@ export default Form.create()(class IndexForm extends React.Component {
                 >
                 <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
-                            {this.props.data&&(this.props.data.status=='0'||this.props.data.status=='4')?<div><div className="clearBoth"> 
+                            {this.props.data&&(!this.props.data.status||this.props.data.status=='0'||this.props.data.status=='4')?<div><div className="clearBoth"> 
                                 <Form.Item 
                                     wrapperCol={{span:18}}
                                     labelCol={{span:4}}

@@ -8,7 +8,6 @@ import {Button} from 'antd'
 class CropBlock extends Component {
 	constructor(props) {
 		super(props);
-		console.log(this.props.urlArr)
 		this.state = {
 			urlArr: this.props.urlArr ? this.props.urlArr : [],
 			number: this.props.number ? this.props.number : '',

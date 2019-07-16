@@ -136,25 +136,27 @@ export default Form.create()(class LotteryForm extends React.Component {
         const _this = this;
         $.ajax({
             method:'post',
-            dataType:'josn',
+            dataType:'json',
             url:window.url+'/api/admin/releaseTC',
             data:{
                 id:this.props.data.id,
-                status:0
+                status:0,
+                token:this.state.token
             },
             success:function(data){
                 if (data.error.length>0) {
-                    this.setState({
+                    _this.setState({
                         loading:false
                     })
                     message.warning(data.error[0].message);
                     return ;
                 };
                 _this.setState({
+                    visible:false,
                     loading:false
                 })
                 message.success('撤销成功')
-                this.props.callbackPass();
+                _this.props.callbackPass(true);
             },
             fail:function(){
                 _this.setState({
@@ -275,7 +277,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                     content:theD.content,
                     link:link,
                     beginTime:theD.drawTimes,
-                    endTime:theD.drawTimes,
+                    endTime:theD.endTimes,
                     appUrl:theD.appUrl,
                     topicList:theD.topicList,
                     publicUrl:theD.publicUrl
@@ -287,33 +289,39 @@ export default Form.create()(class LotteryForm extends React.Component {
         }
     }
     kaiJ=()=>{
+        if(!this.state.result&&this.state.result!='0'){
+            message.warning('请确定答案')
+            return;
+        }
         this.setState({
             loading:true
         })
         const _this = this;
         $.ajax({
             method:'get',
-            dataType:'josn',
+            dataType:'json',
             url:window.url+'/api/admin/pushPrizeGuessing',
             data:{
                 id:this.props.data.id,
-                winId:this.state.userId
+                winId:this.state.userId||'',
+                token:this.state.token,
             },
             success:function(data){
                 if (data.error.length>0) {
-                    this.setState({
+                    _this.setState({
                         loading:false
                     })
                     message.warning(data.error[0].message);
                     return ;
                 };
                 _this.setState({
+                    visible:false,
                     loading:false
                 })
-                message.success('开奖成功')
+                message.success('操作成功')
                 this.props.callbackPass();
             },
-            fail:function(){
+            error:function(){
                 _this.setState({
                     loading:false
                 })
