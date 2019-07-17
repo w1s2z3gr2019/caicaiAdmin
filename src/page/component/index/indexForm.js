@@ -140,7 +140,7 @@ export default Form.create()(class IndexForm extends React.Component {
             url:window.url+'/api/admin/releaseTC',
             data:{
                 id:this.props.data.id,
-                status:0,
+                status:4,
                 token:this.state.token,
             },
             success:function(data){

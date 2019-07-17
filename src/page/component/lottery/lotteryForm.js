@@ -1,19 +1,18 @@
 import React from 'react';
-import {Form,Button,Modal, DatePicker,Radio,message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
+import {Form,Button,Modal, Radio,message,Spin,Input,Select,Divider } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import {luckDrawType,topic,sponsorData} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 import '../index/index.less';
-import CropBlock from '../crop/cropBlock';
-import moment from 'moment';
+
 
 let id = 0;
-const { TextArea } = Input;
+
 export default Form.create()(class LotteryForm extends React.Component {
     constructor(props){
         super(props);
         this.state={
+            callResult:'',
             keys:[],
             names:[],
             visible:false,
@@ -39,75 +38,6 @@ export default Form.create()(class LotteryForm extends React.Component {
             visible:true
         })
     }
-    handleSubmit=(e,status)=>{
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            console.log(values)
-            if (!err) {
-                this.setState({
-                    loading:true
-                })
-                let topicList1=[],topicList2=[];
-                if(values.keys.length){
-                    values.names.map((item,index)=>{
-                        topicList1.push({
-                            id:(this.props.data.id&&(this.props.data.keys.length>index))?this.props.data.keys[index]:'',
-                            content:item
-                        })
-                    })
-                }
-                topicList2.push({id:this.props.data.id&&this.props.data.keys.length>0?this.props.data.keys[0]:'',content:this.state.leftVal});
-                topicList2.push({id:this.props.data.id&&this.props.data.keys.length>1?this.props.data.keys[1]:'',content:this.state.rightVal});
-                let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC'
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: window.url+api ,
-                    data: {
-                        id:this.props.data.id,
-                        token:this.state.token,
-                        type:this.state.type,
-                        frequency:this.state.frequency,
-                        drawType:this.state.drawType,
-                        title:values.title,
-                        content:this.state.content,
-                        pictureUrl:this.state.pictureUrl.length&&this.state.pictureUrl.join(','),
-                        prizeUrl:this.state.prizeUrl.length&&this.state.prizeUrl.join(','),
-                        sponsorshipType:this.state.sponsorshipType,
-                        sponsor:this.state.sponsorshipType?this.state.sponsor:null,
-                        prizeDescription:values.prizeDescription,
-                        appUrl:this.state.appUrl,
-                        publicUrl:this.state.publicUrl,
-                        status:status,
-                        beginTime:this.state.beginTime,
-                        endTime:this.state.endTime,
-                        topicList:this.state.drawType=='2'?JSON.stringify(topicList1):JSON.stringify(topicList2)
-                    },
-                    success:function(data){
-                        if (data.error.length>0) {
-                            this.setState({
-                                loading:false
-                            })
-                            message.warning(data.error[0].message);
-                            return ;
-                        };
-                        this.setState({
-                            visible: false,
-                            loading:false
-                        });
-                        message.success('操作成功');
-                        this.props.callbackPass(true);
-                    }.bind(this),
-                    error:function(a,b,c){
-                        message.error('数据访问异常')
-                        this.setState({
-                            loading:false
-                        })
-                    }.bind(this)
-                })
-            }
-        });
-    }
     handleCancel = (e) => {
         this.setState({
             visible: false,
@@ -128,6 +58,44 @@ export default Form.create()(class LotteryForm extends React.Component {
           keys: keys.filter(key => key !== k),
         });
     };
+    okResult=()=>{
+        if(!this.state.result&&this.state.result!='0'){
+            message.warning('请选择话题答案')
+            return;
+        }
+        this.setState({
+            loading:true
+        })
+        const _this = this;
+        $.ajax({
+            method:'post',
+            dataType:'json',
+            url:window.url+'/api/admin/setWinDetails',
+            data:{
+                id:this.state.result,
+                token:this.state.token
+            },
+            success:function(data){
+                if (data.error.length>0) {
+                    _this.setState({
+                        loading:false
+                    })
+                    message.warning(data.error[0].message);
+                    return ;
+                };
+                _this.setState({
+                    callResult:'123456',
+                    loading:false
+                })
+                message.success('设置成功')
+            },
+            fail:function(){
+                _this.setState({
+                    loading:false
+                })
+            }
+        })
+    }
     //撤销
     cancel=()=>{
         this.setState({
@@ -140,7 +108,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             url:window.url+'/api/admin/releaseTC',
             data:{
                 id:this.props.data.id,
-                status:0,
+                status:4,
                 token:this.state.token
             },
             success:function(data){
@@ -289,8 +257,8 @@ export default Form.create()(class LotteryForm extends React.Component {
         }
     }
     kaiJ=()=>{
-        if(!this.state.result&&this.state.result!='0'){
-            message.warning('请确定答案')
+        if(!this.state.callResult){
+            message.warning('请先确定答案');
             return;
         }
         this.setState({
@@ -336,22 +304,6 @@ export default Form.create()(class LotteryForm extends React.Component {
             getFieldDecorator,getFieldValue 
           } = this.props.form;
          
-        const formItemLayout = {
-            labelCol: {
-              xs: { span: 24 },
-              sm: { span: 4 },
-            },
-            wrapperCol: {
-              xs: { span: 24 },
-              sm: { span: 20 },
-            },
-          };
-          const formItemLayoutWithOutLabel = {
-            wrapperCol: {
-              xs: { span: 24, offset: 0 },
-              sm: { span: 20, offset: 4 },
-            },
-          };
         getFieldDecorator('keys', { initialValue: this.state.keys });
         const keys = getFieldValue('keys');
         let theData = this.props.data||{};
@@ -410,11 +362,11 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="类型配置"
                                 >
-                                <Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
-                                {(topicList).map((item,index)=>{
-                                    return  <Radio value={item.id} key={index}>{item.content}</Radio>
-                                })}
-                                </Radio.Group>
+                                {!this.state.callResult?<Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
+                                    {(topicList).map((item,index)=>{
+                                        return  <Radio value={item.id} key={index}>{item.content}</Radio>
+                                    })}
+                                </Radio.Group>:<span>{this.state.callResult}</span>}
                             </Form.Item>
                         </div>:<div className="clearBoth">
                             <Form.Item 
@@ -422,13 +374,22 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="观点"
                             >
-                                <Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
+                                {!this.state.callResult?<Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
                                     {(topicList).map((item,index)=>{
                                         return  <Radio value={item.id} key={index}>{item.content}</Radio>
                                     })}
-                                </Radio.Group>
+                                </Radio.Group>:<span>{this.state.callResult}</span>}
                             </Form.Item>
                         </div>}
+                        {!this.state.callResult?<div className="clearBoth"> 
+                            <Form.Item
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="答案公布"
+                            >
+                                <Button type="primary" onClick={this.okResult}>确定答案</Button>
+                            </Form.Item>
+                        </div>:''}
                         <Divider />
                         <div className="clearBoth"> 
                             <Form.Item
