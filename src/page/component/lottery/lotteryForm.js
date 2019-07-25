@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import { dataTool} from '../../../tools.js';
 import '../index/index.less';
-
+import {topic} from '../../../dataDic'
 
 let id = 0;
 
@@ -150,32 +150,13 @@ export default Form.create()(class LotteryForm extends React.Component {
                 token:locaData.token
             },
             success: function (data) {
-                let arrData=[];
                 if(data.error.length>0){
                     message.warning(data.error[0].message);
-                }else{
-                    let theArr = data.data.list;
-                    for (let i = 0; i < theArr.length; i++) {
-                        let thisdata = theArr[i];
-                        arrData.push({
-                            key: i,
-                            tid:thisdata.tid,
-                            name: thisdata.name,
-                            identifyName: thisdata.identifyName, 
-                            province: thisdata.province,
-                            city: thisdata.city,
-                            area: thisdata.area,
-                            citys:thisdata.province+'-'+thisdata.city+'-'+thisdata.area,
-                            address: thisdata.address,
-                            contactNumber: thisdata.contactNumber,
-                            countN: thisdata.countN,
-                            countY: thisdata.countY,
-                        });
-                    };
+                    return;
                 }
                 this.setState({
                     loading:false,
-                    dataSource: arrData,
+                    dataSource: data.data.list||[],
                 });
             }.bind(this),
             error:function(a,b,c){
@@ -252,6 +233,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                 });
             }
             this.setState({
+                winId:undefined,
                 visible:nextProps.visible
             })
         }
@@ -271,7 +253,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             url:window.url+'/api/admin/pushPrizeGuessing',
             data:{
                 id:this.props.data.id,
-                winId:this.state.userId||'',
+                winId:this.state.winId||'',
                 token:this.state.token,
             },
             success:function(data){
@@ -345,7 +327,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="活动标题"
                             >
-                               <span>活动标题</span>
+                               <span>{theData.title}</span>
                             </Form.Item>
                         </div>
                         <div className="clearBoth">
@@ -363,8 +345,8 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 label="类型配置"
                                 >
                                 {!this.state.callResult?<Radio.Group onChange={(e)=>{this.setState({result:e.target.value})}} value={this.state.result}>
-                                    {(topicList).map((item,index)=>{
-                                        return  <Radio value={item.id} key={index}>{item.content}</Radio>
+                                    {(topicList).map(function(item,index){
+                                        return  <Radio value={item.id} key={item.id}>{item.content}</Radio>
                                     })}
                                 </Radio.Group>:<span>{this.state.callResult}</span>}
                             </Form.Item>
@@ -461,19 +443,19 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="指定中奖人"
                             >
-                              <Select 
+                                <Select 
                                     placeholder="未指定则随机抽取中奖人"
                                     style={{width:200}}
-                                    onChange={(e)=>{this.setState({
-                                         winId:e
-                                    })}} 
+                                    onChange={(e)=>{this.setState({winId:e})}} 
                                     value={this.state.winId}>
                                     {
-                                        dataSource.map((item,index)=>{
-                                            return <Select.Option key={index} value={item.tid}>{item.name}</Select.Option>
+                                    
+                                        dataSource.map(function (item,index) {
+                                            return	<Select.Option value={item.id} key={index}>{item.name}</Select.Option>
                                         })
                                     }
-                              </Select>
+                                </Select>
+                                <Button onClick={()=>{this.setState({winId:undefined})}}>取消指定</Button>
                             </Form.Item>
                         </div>
                         <div className="clearBoth">
