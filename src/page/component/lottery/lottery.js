@@ -14,6 +14,7 @@ export class Lottery extends React.Component {
     constructor(props){
         super(props);
         this.state = { 
+            status:5,
             selectedRowKeys: [],
             selectedRows: [],
             loading:false,
@@ -115,7 +116,7 @@ export class Lottery extends React.Component {
                 type:this.state.type,
                 frequency:this.state.frequency,
                 drawType:this.state.drawType,
-                status:1,
+                status:this.state.status,
                 title:this.state.title,
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
@@ -203,11 +204,10 @@ export class Lottery extends React.Component {
         this.setState({
             visibleForm:false
         })
-        if(state){
-            this.loadData(this.state.page);
-        }
+        this.loadData(this.state.page);
     }
     reset=()=>{
+        this.state.status=5;
         this.state.title='';
         this.state.type=undefined;
         this.state.frequency=undefined;
@@ -326,7 +326,7 @@ export class Lottery extends React.Component {
                                 })
                             }
                         </Select>
-                        <Select  className="inpWin" 
+                       {/** <Select  className="inpWin" 
                             value={this.state.status} 
                             onChange={(e)=>{this.setState({status:e})}} 
                             placeholder="状态" >
@@ -335,7 +335,7 @@ export class Lottery extends React.Component {
                                     return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
                                 })
                             }
-                        </Select>
+                        </Select> */}
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                         <div style={{float:'right',overflow:'hidden'}}>

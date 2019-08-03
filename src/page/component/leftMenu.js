@@ -10,7 +10,7 @@ export class LeftMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            keys:['1'],
             rootSubmenuKeys : ['sub1','sub2','sub3'],
             openKeys:['sub1'],
             visible: false,
@@ -35,7 +35,15 @@ export class LeftMenu extends React.Component {
             visiblePass: false
         })
     }
+    handleClick=(e)=>{
+        this.setState({
+            keys:[e.key]
+        })
+        window.localStorage.setItem('keys',e.key)
+    }
     exit() {
+        window.localStorage.removeItem('keys');
+        window.localStorage.removeItem('openKeys');
         window.localStorage.removeItem("data");
     }
     componentWillMount() {
@@ -53,6 +61,14 @@ export class LeftMenu extends React.Component {
       };
     componentDidMount() {
         var locaData = JSON.parse(window.localStorage.getItem("userInfo")) || {};
+        let keys = window.localStorage.getItem('keys')
+        if(keys){
+            let openKeys=['sub'+keys.length];
+            this.setState({
+                keys:[keys],
+                openKeys
+            })
+        }
         this.setState({
             name: locaData.name
         })
@@ -81,11 +97,13 @@ export class LeftMenu extends React.Component {
                 </div>
                 <div>
                     <Menu
-                        defaultSelectedKeys={['1']}
+                        defaultSelectedKeys={this.state.keys}
+                        selectedKeys={this.state.keys}
                         openKeys={this.state.openKeys}
                         onOpenChange={this.onOpenChange}
                         mode='inline'
                         theme="dark"
+                        onClick={this.handleClick}
                         inlineCollapsed={this.state.collapsed}
                     >   
                         <SubMenu
@@ -142,7 +160,7 @@ export class LeftMenu extends React.Component {
                                 </span>
                             }
                         >
-                            <Menu.Item key="4">
+                            <Menu.Item key="4444">
                                 <NavLink to='/page/naming' replace>
                                     <span>冠名设置</span>
                                 </NavLink>
@@ -157,7 +175,7 @@ export class LeftMenu extends React.Component {
                                 </span>
                             }
                         >
-                            <Menu.Item key="5">
+                            <Menu.Item key="555">
                                 <NavLink to='/page/account' replace>
                                     <span>账号管理</span>
                                 </NavLink>

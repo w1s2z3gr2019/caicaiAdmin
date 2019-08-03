@@ -1,10 +1,11 @@
 import React from 'react';
-import {Form,Button,Modal, Radio,message,Spin,Input,Select,Divider } from 'antd';
+import {Form,Button,Modal, Radio,message,Spin,Input,Select,Divider ,DatePicker} from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import { dataTool} from '../../../tools.js';
 import '../index/index.less';
 import {topic} from '../../../dataDic'
+import moment from 'moment';
 
 let id = 0;
 
@@ -13,6 +14,7 @@ export default Form.create()(class LotteryForm extends React.Component {
         super(props);
         this.state={
             callResult:'',
+            gl_val:'',
             keys:[],
             names:[],
             visible:false,
@@ -59,41 +61,99 @@ export default Form.create()(class LotteryForm extends React.Component {
         });
     };
     okResult=()=>{
-        if(!this.state.result&&this.state.result!='0'){
+        if(this.state.result||this.state.gl_val||this.state.result=='0'){
+            this.setState({
+                loading:true
+            })
+            const _this = this;
+            let gl_val=this.state.gl_val;
+            $.ajax({
+                method:'post',
+                dataType:'json',
+                url:window.url+'/api/admin/setWinDetails',
+                data:{
+                    id:this.state.gl_val?this.props.data.topicList[0].id:this.state.result,
+                    drawValue:this.state.gl_val,
+                    token:this.state.token
+                },
+                success:function(data){
+                    if (data.error.length>0) {
+                        _this.setState({
+                            loading:false
+                        })
+                        message.warning(data.error[0].message);
+                        return ;
+                    };
+                    
+                    _this.setState({
+                        resultId:data.data.id,
+                        callResult:gl_val?data.data.drawValue:data.data.content,
+                        loading:false
+                    })
+                    message.success('设置成功')
+                },
+                fail:function(){
+                    _this.setState({
+                        loading:false
+                    })
+                }
+            })
+        }else{
             message.warning('请选择话题答案')
-            return;
-        }
+        } 
+    }
+    //修改
+    save=()=>{
         this.setState({
             loading:true
         })
-        const _this = this;
+        console.log(this.props.data)
+        let theData = this.props.data||{};
         $.ajax({
-            method:'post',
-            dataType:'json',
-            url:window.url+'/api/admin/setWinDetails',
-            data:{
-                id:this.state.result,
-                token:this.state.token
+            type: "POST",
+            dataType: "json",
+            url: window.url+'/api/admin/updateTC' ,
+            data: {
+                id:theData.id,
+                token:this.state.token,
+                type:theData.type,
+                frequency:theData.frequency,
+                drawType:theData.drawType,
+                title:theData.title,
+                content:theData.content,
+                pictureUrl:theData.pictureUrl?theData.pictureUrl.join(','):'',
+                prizeUrl:theData.prizeUrl?theData.prizeUrl.join(','):'',
+                sponsorshipType:theData.sponsorshipType,
+                sponsor:theData.sponsorshipType,
+                prizeDescription:theData.prizeDescription,
+                appUrl:theData.appUrl,
+                publicUrl:theData.publicUrl,
+                status:theData.status,
+                drawTimes:this.state.beginTime,
+                endTimes:this.state.endTime,
+                topicList:JSON.stringify(theData.topicList)
             },
             success:function(data){
                 if (data.error.length>0) {
-                    _this.setState({
+                    this.setState({
                         loading:false
                     })
                     message.warning(data.error[0].message);
                     return ;
                 };
-                _this.setState({
-                    callResult:'123456',
+                this.setState({
+                    visible: false,
+                    loading:false
+                });
+                message.success('操作成功');
+                this.props.callbackPass(true);
+            }.bind(this),
+            error:function(a,b,c){
+                message.error('数据访问异常')
+                this.setState({
                     loading:false
                 })
-                message.success('设置成功')
-            },
-            fail:function(){
-                _this.setState({
-                    loading:false
-                })
-            }
+            }.bind(this)
         })
     }
     //撤销
@@ -211,7 +271,16 @@ export default Form.create()(class LotteryForm extends React.Component {
                 if(theD.publicUrl){
                     link.push('2')
                 }
+                let topicList=theD.topicList,callResult='';
+                topicList.map(item=>{
+                    if(item.status){
+                        callResult=theD.drawType===1?item.drawValue:item.content
+                    }
+                })
                 this.setState({
+                    gl_val:'',
+                    result:undefined,
+                    callResult,
                     pictureUrl:theD.pictureUrl,
                     prizeUrl:theD.prizeUrl,
                     keys:theD.keys,
@@ -225,8 +294,8 @@ export default Form.create()(class LotteryForm extends React.Component {
                     sponsor:theD.sponsor,
                     content:theD.content,
                     link:link,
-                    beginTime:theD.drawTimes,
-                    endTime:theD.endTimes,
+                    beginTime:theD.drawTimes?theD.drawTimes:undefined,
+                    endTime:theD.endTimes?theD.endTimes:undefined,
                     appUrl:theD.appUrl,
                     topicList:theD.topicList,
                     publicUrl:theD.publicUrl
@@ -338,7 +407,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.pictureUrl[0]}/>:''}
                             </Form.Item>
                         </div>
-                        {this.state.drawType!==2?<div className="clearBoth">
+                        {this.state.drawType===0&&<div className="clearBoth">
                             <Form.Item 
                                 wrapperCol={{span:12}}
                                 labelCol={{span:4}}
@@ -350,7 +419,24 @@ export default Form.create()(class LotteryForm extends React.Component {
                                     })}
                                 </Radio.Group>:<span>{this.state.callResult}</span>}
                             </Form.Item>
-                        </div>:<div className="clearBoth">
+                        </div>}
+                        {this.state.drawType===1&&<div className="clearBoth">
+                            <Form.Item 
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="概率值"
+                            >
+                                {!this.state.callResult?
+                                    <Input  style={{width:200}}
+                                    placeholder="请输入概率值(0~1)"
+                                    onChange={(e)=>{
+                                        this.setState({
+                                            gl_val:e.target.value
+                                        })}} 
+                                        value={this.state.gl_val}/>:<span>{this.state.callResult}</span>}
+                            </Form.Item>
+                        </div>}
+                        {this.state.drawType===2&&<div className="clearBoth">
                             <Form.Item 
                                 wrapperCol={{span:18}}
                                 labelCol={{span:4}}
@@ -419,6 +505,36 @@ export default Form.create()(class LotteryForm extends React.Component {
                                <span>{theData.content}</span>
                             </Form.Item>
                         </div>
+                        {theData.status!==3? <div className="clearBoth"> 
+                                <Form.Item
+                                    style={{width:'50%',display:'inline-block'}}
+                                    wrapperCol={{span:14}}
+                                    labelCol={{span:8}}
+                                    label="开奖时间"
+                                >
+                                <DatePicker 
+                                    allowClear={false}
+                                    showTime placeholder="选择开奖时间" onChange={(e,str)=>{
+                                        this.setState({
+                                            beginTime:str
+                                        })
+                                    }} value={moment(this.state.beginTime)}/>
+                                </Form.Item>
+                                <Form.Item
+                                    style={{width:'50%',display:'inline-block'}}
+                                    wrapperCol={{span:14}}
+                                    labelCol={{span:8}}
+                                    label="截止时间"
+                                >
+                                <DatePicker 
+                                    allowClear={false}
+                                    showTime placeholder="选择截止时间" onChange={(e,str)=>{
+                                        this.setState({
+                                            endTime:str
+                                        })
+                                    }} value={moment(this.state.endTime)}/>
+                                </Form.Item>
+                            </div>:
                         <div className="clearBoth"> 
                             <Form.Item
                                 style={{width:'50%',display:'inline-block'}}
@@ -436,8 +552,8 @@ export default Form.create()(class LotteryForm extends React.Component {
                             >
                             <span>{this.state.endTime}</span>
                             </Form.Item>
-                        </div>
-                        <div className="clearBoth">
+                        </div>}
+                        {theData.status!==3&&<div className="clearBoth">
                             <Form.Item
                                 wrapperCol={{span:18}}
                                 labelCol={{span:4}}
@@ -455,16 +571,20 @@ export default Form.create()(class LotteryForm extends React.Component {
                                         })
                                     }
                                 </Select>
-                                <Button onClick={()=>{this.setState({winId:undefined})}}>取消指定</Button>
+                                <Button style={{marginLeft:10}} onClick={()=>{this.setState({winId:undefined})}}>取消指定</Button>
                             </Form.Item>
-                        </div>
+                        </div>}
                         <div className="clearBoth">
                             <Form.Item  
                                 wrapperCol={{ span: 18,offset:4 }}>
-                                <Button className="marginR_20"   onClick={this.kaiJ}
+                                {theData.status!==3&&<Button className="marginR_20"   onClick={this.save}
+                                type="primary">
+                                    修改
+                                </Button>}
+                                {theData.status!==3&&<Button className="marginR_20"   onClick={this.kaiJ}
                                     type="primary">
                                     开奖
-                                </Button>
+                                </Button>}
                                 <Button className="marginR_20" onClick={this.cancel}
                                     type="danger">
                                     撤销

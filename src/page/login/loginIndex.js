@@ -81,6 +81,7 @@ export class Login extends React.Component {
     }
     componentWillMount(){
         //清除本地存储
+        window.localStorage.removeItem('keys')
         window.localStorage.removeItem("data");
     }
     render() {    

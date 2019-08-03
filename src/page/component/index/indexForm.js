@@ -45,10 +45,16 @@ export default Form.create()(class IndexForm extends React.Component {
         this.props.form.validateFields((err, values) => {
             console.log(values)
             if (!err) {
-                this.setState({
-                    loading:true
-                })
-                let topicList1=[],topicList2=[];
+                if(!this.state.pictureUrl.length){
+                    message.warning('请上传话题图片')
+                    return;
+                }
+                if(!this.state.pictureUrl.length){
+                    message.warning('请上传话题图片')
+                    return;
+                }
+               
+                let topicList1=[],topicList2=[],topicList3=[];
                 if(values.keys.length){
                     values.names.map((item,index)=>{
                         topicList1.push({
@@ -59,7 +65,40 @@ export default Form.create()(class IndexForm extends React.Component {
                 }
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>0?this.props.data.keys[0]:'',content:this.state.leftVal});
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>1?this.props.data.keys[1]:'',content:this.state.rightVal});
-                let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC'
+                topicList3.push({id:this.props.data.id&&this.props.data.keys.length?this.props.data.keys[0]:'',content:'1234'});
+                let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC';
+                let topicList;
+                console.log(this.state.drawType)
+                switch(this.state.drawType){
+                    case 0:
+                        topicList=topicList2;
+                        break;
+                    case 1:
+                        topicList=topicList3;
+                        break;
+                    case 2:
+                        topicList=topicList1;
+                        break;
+                    default:
+                        break;
+                }
+                let state =false;
+                topicList.map(item=>{
+                    if(!item.content){
+                        state=true
+                    }
+                })
+                if(state){
+                    message.warning('请填写话题答案配置')
+                    return;
+                }
+                if(!this.state.sponsorshipType&&this.state.sponsorshipType!='0'){
+                    message.warning('请选择赞助商')
+                    return;
+                }
+                this.setState({
+                    loading:true
+                })
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -82,7 +121,7 @@ export default Form.create()(class IndexForm extends React.Component {
                         status:status,
                         drawTimes:this.state.beginTime,
                         endTimes:this.state.endTime,
-                        topicList:this.state.drawType=='2'?JSON.stringify(topicList1):JSON.stringify(topicList2)
+                        topicList:JSON.stringify(topicList)
                     },
                     success:function(data){
                         if (data.error.length>0) {
@@ -263,8 +302,6 @@ export default Form.create()(class IndexForm extends React.Component {
         const keys = getFieldValue('keys');
         
         let theData = this.props.data||{};
-        console.log(this.state.name)
-        console.log(this.state.keys)
         const formItems = keys.map((k, index) => (
             <Form.Item
               {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
@@ -379,7 +416,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                     urlArr = {this.state.pictureUrl||[]} />
                                 </Form.Item>
                             </div>
-                            {this.state.drawType!==2?<div className="clearBoth">
+                            {this.state.drawType==0&&<div className="clearBoth">
                                 <Form.Item 
                                     wrapperCol={{span:12}}
                                     labelCol={{span:4}}
@@ -392,7 +429,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                         <span>乙方 - </span><Input placeholder="输入" style={{width:60}} value={this.state.rightVal} onChange={(e)=>{this.setState({rightVal:e.target.value})}}/>
                                     </div>
                                 </Form.Item>
-                            </div>:<div className="clearBoth">
+                            </div>}
+                            {this.state.drawType==2&&<div className="clearBoth">
                                 {formItems}
                                 <Form.Item {...formItemLayoutWithOutLabel}>
                                     <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
