@@ -10,10 +10,13 @@ import {PicturesWall} from '../picture/picture'
 import moment from 'moment';
 
 let id = 0;
+let endTimes = dataTool.nowTime().split(' '),
+endT = endTimes[0]+' 00:00:00';
 const { TextArea } = Input;
 export default Form.create()(class IndexForm extends React.Component {
     constructor(props){
         super(props);
+       
         this.state={
             keys:[],
             names:[],
@@ -26,8 +29,8 @@ export default Form.create()(class IndexForm extends React.Component {
             pictureUrl:[],
             link:[],
             prizeUrl:[],
-            beginTime:dataTool.nowTime(),
-            endTime:dataTool.nowTime(),
+            beginTime:endT,
+            endTime:endT,
         }
     }
     showModal = () => {
@@ -218,6 +221,7 @@ export default Form.create()(class IndexForm extends React.Component {
     }; 
     componentWillReceiveProps(nextProps){
         if (!this.props.visible && nextProps.visible){
+
             if(!nextProps.data.id){
                 this.setState({
                     pictureUrl:[],
@@ -234,8 +238,8 @@ export default Form.create()(class IndexForm extends React.Component {
                     content:'',
                     link:[],
                     appUrl:'',
-                    beginTime:dataTool.nowTime(),
-                    endTime:dataTool.nowTime(),
+                    beginTime:endT,
+                    endTime:endT,
                     publicUrl:''
                 });
                 this.props.form.resetFields();

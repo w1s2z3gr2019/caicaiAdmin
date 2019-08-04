@@ -8,7 +8,8 @@ import {topic} from '../../../dataDic'
 import moment from 'moment';
 
 let id = 0;
-
+let endTimes = dataTool.nowTime().split(' '),
+endT = endTimes[0]+' 00:00:00';
 export default Form.create()(class LotteryForm extends React.Component {
     constructor(props){
         super(props);
@@ -26,8 +27,8 @@ export default Form.create()(class LotteryForm extends React.Component {
             pictureUrl:[],
             link:[],
             prizeUrl:[],
-            beginTime:dataTool.nowTime(),
-            endTime:dataTool.nowTime(),
+            beginTime:endT,
+            endTime:endT,
         }
     }
     showModal = () => {
@@ -534,8 +535,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                         })
                                     }} value={moment(this.state.endTime)}/>
                                 </Form.Item>
-                            </div>:
-                        <div className="clearBoth"> 
+                            </div>:<div className="clearBoth"> 
                             <Form.Item
                                 style={{width:'50%',display:'inline-block'}}
                                 wrapperCol={{span:14}}
