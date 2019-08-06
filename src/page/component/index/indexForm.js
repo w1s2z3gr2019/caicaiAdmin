@@ -611,7 +611,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="活动标题"
                             >
-                               <span>活动标题</span>
+                               <span>{theData.title}</span>
                             </Form.Item>
                         </div>
                         <div className="clearBoth">
