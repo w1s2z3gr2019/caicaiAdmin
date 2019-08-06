@@ -76,9 +76,9 @@ export class Lottery extends React.Component {
                     }
                 },
                 {
-                    title: '创建时间',
-                    dataIndex: 'createTimes',
-                    key: 'createTimes'
+                    title: '开奖时间',
+                    dataIndex: 'drawTimes',
+                    key: 'drawTimes'
                 },
                 {
                     title: '截止时间',

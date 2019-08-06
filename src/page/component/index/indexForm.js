@@ -99,6 +99,14 @@ export default Form.create()(class IndexForm extends React.Component {
                     message.warning('请选择赞助商')
                     return;
                 }
+                let beginT =  this.state.beginTime;
+                let endTime = this.state.endTime;
+                let beg = new Date(beginT).getTime(),
+                    endT = new Date(endTime).getTime();
+                    if(endT>beg){
+                        message.warning('截止时间不能大于开奖时间');
+                        return;
+                    }
                 this.setState({
                     loading:true
                 })

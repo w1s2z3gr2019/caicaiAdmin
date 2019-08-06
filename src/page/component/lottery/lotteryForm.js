@@ -105,6 +105,14 @@ export default Form.create()(class LotteryForm extends React.Component {
     }
     //修改
     save=()=>{
+        let beginT =  this.state.beginTime;
+        let endTime = this.state.endTime;
+        let beg = new Date(beginT).getTime(),
+            endT = new Date(endTime).getTime();
+            if(endT>beg){
+                message.warning('截止时间不能大于开奖时间');
+                return;
+            }
         this.setState({
             loading:true
         })
@@ -339,7 +347,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                     loading:false
                 })
                 message.success('操作成功')
-                this.props.callbackPass();
+                _this.props.callbackPass();
             },
             error:function(){
                 _this.setState({
@@ -486,7 +494,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.prizeUrl[0]}/>:''}
                             </Form.Item>
                         </div>
-                        <div className="clearBoth"> 
+                        {(theData.appUrl||theData.publicUrl)&&<div className="clearBoth"> 
                             <Form.Item
                                 wrapperCol={{span:18}}
                                 labelCol={{span:4}}
@@ -495,7 +503,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 {theData.appUrl?<div>小程序 - {theData.appUrl}</div>:''}
                                 {theData.publicUrl?<div>公众号 - {theData.publicUrl}</div>:''}
                             </Form.Item>
-                        </div>
+                        </div>}
                         
                         <div className="clearBoth">
                             <Form.Item
