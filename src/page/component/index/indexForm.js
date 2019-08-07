@@ -348,7 +348,6 @@ export default Form.create()(class IndexForm extends React.Component {
                 frequency=item.title
             }
           })
-         console.log(this.props.data)
         return (
           <div> 
                 <Modal
@@ -619,7 +618,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{ span: 4 }}
                                 wrapperCol={{ span: 18 }}
                                 label="主题图片" >
-                                {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.pictureUrl[0]}/>:''}
+                                {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={window.imgApi+this.state.pictureUrl[0]}/>:''}
                             </Form.Item>
                         </div>
                         {this.state.drawType!==2?<div className="clearBoth">
@@ -648,6 +647,22 @@ export default Form.create()(class IndexForm extends React.Component {
                                 }
                             </Form.Item>
                         </div>}
+                        {theData.status==3&&<div>
+                            <Form.Item 
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="本期答案"
+                            >
+                               <span>{theData.winValue}</span>
+                            </Form.Item>
+                            <Form.Item 
+                                wrapperCol={{span:18}}
+                                labelCol={{span:4}}
+                                label="中奖人"
+                            >
+                               <span>{theData.userList&&theData.userList.length&&theData.userList[0].name}</span>
+                            </Form.Item>
+                            </div>}
                         <Divider />
                         <div className="clearBoth"> 
                             <Form.Item
@@ -672,7 +687,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{ span: 4 }}
                                 wrapperCol={{ span: 18 }}
                                 label="奖品图片" >
-                               {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.prizeUrl[0]}/>:''}
+                               {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={window.imgApi+this.state.prizeUrl[0]}/>:''}
                             </Form.Item>
                         </div>
                         <div className="clearBoth"> 
@@ -694,16 +709,16 @@ export default Form.create()(class IndexForm extends React.Component {
                                <span>{theData.content}</span>
                             </Form.Item>
                         </div>
-                        <div className="clearBoth">
-                            <Form.Item  
-                                wrapperCol={{ span: 18,offset:4 }}>
-                                <Button className="marginR_20" onClick={this.cancel}
-                                    type="danger">
-                                    撤销
-                                </Button>
-                                <Button onClick={this.handleCancel} >取消</Button>
-                            </Form.Item>
-                        </div>
+                        <div className="clearBoth" >
+                            {theData.status!=3&&<Form.Item  
+                                 wrapperCol={{ span: 18,offset:4 }}>
+                                        <Button className="marginR_20" onClick={this.cancel}
+                                            type="danger">
+                                            撤销
+                                        </Button>
+                                        <Button onClick={this.handleCancel} >取消</Button>
+                                    </Form.Item>}
+                                </div>
                             </div>}
                         </Spin>
                     </Form>

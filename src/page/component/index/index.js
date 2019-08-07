@@ -116,6 +116,7 @@ export class Index extends React.Component {
                 frequency:this.state.frequency,
                 drawType:this.state.drawType,
                 title:this.state.title,
+                status:this.state.status,
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
                 token:locaData.token
@@ -129,16 +130,22 @@ export class Index extends React.Component {
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
                         let name=[],keys=[];
-                        let topicList = thisdata.drawList||[]
+                        let topicList = thisdata.drawList||[];
+                        let winValue=''
                         topicList.map(item=>{
+                            if(item.status){
+                                winValue=item.content
+                            }
                             name.push(item.content)
                             keys.push(item.id)
                         })
                         arrData.push({
                             key: i,
                             id: thisdata.id,
+                            winValue:winValue,
                             serialNumber: thisdata.serialNumber, 
                             type: thisdata.type,
+                            userList:thisdata.userList,
                             frequency: thisdata.frequency,
                             drawType: thisdata.drawType, 
                             title: thisdata.title,
@@ -208,6 +215,7 @@ export class Index extends React.Component {
         }
     }
     reset=()=>{
+        this.state.status=undefined;
         this.state.title='';
         this.state.type=undefined;
         this.state.frequency=undefined;

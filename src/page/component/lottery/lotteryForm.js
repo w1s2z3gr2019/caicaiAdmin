@@ -203,7 +203,7 @@ export default Form.create()(class LotteryForm extends React.Component {
         })
     }
      //获取列表数据；
-     loadData=(pageNo=1) => {
+     loadData=(id) => {
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         this.setState({
             loading: true
@@ -213,9 +213,9 @@ export default Form.create()(class LotteryForm extends React.Component {
             dataType: "json",
             url: window.url + "/api/admin/selectUser",
             data:{
-                pageNo: pageNo || 1,
+                tid:id,
+                pageNo: 1,
                 pageSize:9999999,
-                name:this.state.name,
                 token:locaData.token
             },
             success: function (data) {
@@ -271,7 +271,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                 });
                 this.props.form.resetFields();
             }else{
-                this.loadData();
+                this.loadData(nextProps.data.id);
                 let theD = nextProps.data||{};
                 let link=[];
                 if(theD.appUrl){
@@ -376,7 +376,6 @@ export default Form.create()(class LotteryForm extends React.Component {
           })
          const dataSource = this.state.dataSource||[];
          const topicList=this.state.topicList||[];
-         console.log(topicList)
         return (
           <div> 
                 <Modal
@@ -413,7 +412,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{ span: 4 }}
                                 wrapperCol={{ span: 18 }}
                                 label="主题图片" >
-                                {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.pictureUrl[0]}/>:''}
+                                {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={window.imgApi+this.state.pictureUrl[0]}/>:''}
                             </Form.Item>
                         </div>
                         {this.state.drawType===0&&<div className="clearBoth">
@@ -491,7 +490,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{ span: 4 }}
                                 wrapperCol={{ span: 18 }}
                                 label="奖品图片" >
-                               {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={'https://static.xcustom.net/upload'+this.state.prizeUrl[0]}/>:''}
+                               {this.state.prizeUrl.length?<img alt = "奖品图片" style={{width:200,height:100}} src={window.imgApi+this.state.prizeUrl[0]}/>:''}
                             </Form.Item>
                         </div>
                         {(theData.appUrl||theData.publicUrl)&&<div className="clearBoth"> 

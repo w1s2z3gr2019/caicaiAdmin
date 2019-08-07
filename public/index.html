@@ -34,13 +34,19 @@
                     var path_url = path.trim();
                     console.log(path_url)
                     window.url=path_url;
-                    break;
+                }
+                if(~(config_arr[i].indexOf('imgApi='))){
+                    var path2 = config_arr[i].replace('imgApi=','');
+                    var path_url2 = path2.trim();
+                    console.log(path_url2)
+                    window.imgApi=path_url2;
                 }
             }
         })
     } catch (error) {
         console.log(error)
-        window.url='https://www.xcustom.net'
+        window.url='https://api.xcustom.net';
+        window.imgApi = 'https://static.xcustom.net/upload';
     }
 </script>
 <body>

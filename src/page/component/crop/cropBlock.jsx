@@ -80,7 +80,7 @@ class CropBlock extends Component {
 	render() {
 		let imgList = this.state.urlArr.map((src, index) =>
 			<div key = {index} className="crop-img-block">
-				<img alt = "图片" className = "crop-img" title = "删除" src = {'https://static.xcustom.net/upload'+src} onClick = {this.delImg.bind(this, index)} />
+				<img alt = "图片" className = "crop-img" title = "删除" src = {window.imgApi+src} onClick = {this.delImg.bind(this, index)} />
 			</div>
 		)
 		return (
