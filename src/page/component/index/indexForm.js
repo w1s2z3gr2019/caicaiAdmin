@@ -46,7 +46,6 @@ export default Form.create()(class IndexForm extends React.Component {
     handleSubmit=(e,status)=>{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            console.log(values)
             if (!err) {
                 if(!this.state.pictureUrl.length){
                     message.warning('请上传话题图片')
@@ -71,7 +70,6 @@ export default Form.create()(class IndexForm extends React.Component {
                 topicList3.push({id:this.props.data.id&&this.props.data.keys.length?this.props.data.keys[0]:'',content:'1234'});
                 let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC';
                 let topicList;
-                console.log(this.state.drawType)
                 switch(this.state.drawType){
                     case 0:
                         topicList=topicList2;
@@ -102,7 +100,12 @@ export default Form.create()(class IndexForm extends React.Component {
                 let beginT =  this.state.beginTime;
                 let endTime = this.state.endTime;
                 let beg = new Date(beginT).getTime(),
+                    nowT = new Date().getTime(),
                     endT = new Date(endTime).getTime();
+                    if(nowT>beg){
+                        message.warning('开奖时间不能小于当前时间')
+                        return;
+                    }
                     if(endT>beg){
                         message.warning('截止时间不能大于开奖时间');
                         return;
@@ -121,6 +124,8 @@ export default Form.create()(class IndexForm extends React.Component {
                         frequency:this.state.frequency,
                         drawType:this.state.drawType,
                         title:values.title,
+                        releaseWechat:this.state.releaseWechat,
+                        releaseName:this.state.releaseName,
                         content:this.state.content,
                         pictureUrl:this.state.pictureUrl.length&&this.state.pictureUrl.join(','),
                         prizeUrl:this.state.prizeUrl.length&&this.state.prizeUrl.join(','),
@@ -245,6 +250,8 @@ export default Form.create()(class IndexForm extends React.Component {
                     sponsor:'',
                     content:'',
                     link:[],
+                    releaseWechat:'',
+                    releaseName:'',
                     appUrl:'',
                     beginTime:endT,
                     endTime:endT,
@@ -261,6 +268,8 @@ export default Form.create()(class IndexForm extends React.Component {
                     link.push('2')
                 }
                 this.setState({
+                    releaseName:theD.releaseName,
+                    releaseWechat:theD.releaseWechat,
                     pictureUrl:theD.pictureUrl,
                     prizeUrl:theD.prizeUrl,
                     keys:theD.keys,
@@ -484,6 +493,24 @@ export default Form.create()(class IndexForm extends React.Component {
                                     </span>
                                 </Form.Item>       
                             </div>
+                            <div className="clearBoth"> 
+                                <Form.Item 
+                                style={{width:'50%',float:'left'}}
+                                    wrapperCol={{span:10}}
+                                    labelCol={{span:8}}
+                                    label="微信昵称"
+                                    >
+                                    <Input  placeholder="输入昵称" onChange={(e)=>{this.setState({releaseName:e.target.value})}} value={this.state.releaseName}/>
+                                </Form.Item>  
+                                <Form.Item
+                                    style={{width:'50%',float:'left'}}
+                                    wrapperCol={{span:10}}
+                                    labelCol={{span:8}}
+                                    label="微信号"
+                                    >
+                                    <Input placeholder="输入账号" onChange={(e)=>{this.setState({releaseWechat:e.target.value})}} value={this.state.releaseWechat}/>
+                                </Form.Item>       
+                            </div>
                             <div className="clearBoth">
                                 <Form.Item
                                     labelCol={{ span: 4 }}
@@ -682,6 +709,24 @@ export default Form.create()(class IndexForm extends React.Component {
                                 {this.state.sponsorshipType===1?<span>赞助商-{this.state.sponsor}</span>:this.state.sponsorshipType===0?'猜奖官方':''}
                             </Form.Item>       
                         </div>
+                        <div className="clearBoth"> 
+                        <Form.Item 
+                        style={{width:'50%',float:'left'}}
+                            wrapperCol={{span:12}}
+                            labelCol={{span:8}}
+                            label="微信昵称"
+                            >
+                            <span>{this.state.releaseName}</span> 
+                        </Form.Item>  
+                        <Form.Item
+                            style={{width:'50%',float:'left'}}
+                            wrapperCol={{span:12}}
+                            labelCol={{span:8}}
+                            label="微信号"
+                            >
+                            <span>{this.state.releaseWechat}</span> 
+                        </Form.Item>       
+                    </div>
                         <div className="clearBoth">
                             <Form.Item
                                 labelCol={{ span: 4 }}

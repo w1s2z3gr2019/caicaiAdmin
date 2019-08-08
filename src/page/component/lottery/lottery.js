@@ -138,6 +138,8 @@ export class Lottery extends React.Component {
                         })
                         arrData.push({
                             key: i,
+                            releaseWechat:thisdata.releaseWechat,
+                            releaseName:thisdata.releaseName,
                             id: thisdata.id,
                             serialNumber: thisdata.serialNumber, 
                             type: thisdata.type,

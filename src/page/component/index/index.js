@@ -141,6 +141,8 @@ export class Index extends React.Component {
                         })
                         arrData.push({
                             key: i,
+                            releaseName:thisdata.releaseName,
+                            releaseWechat:thisdata.releaseWechat,
                             id: thisdata.id,
                             winValue:winValue,
                             serialNumber: thisdata.serialNumber, 

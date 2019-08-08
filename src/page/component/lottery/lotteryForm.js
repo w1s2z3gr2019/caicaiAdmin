@@ -73,7 +73,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                 dataType:'json',
                 url:window.url+'/api/admin/setWinDetails',
                 data:{
-                    id:this.state.gl_val?this.props.data.topicList[0].id:this.state.result,
+                    id:this.state.gl_val?this.props.data.topicList&&this.props.data.topicList[0].id:this.state.result,
                     drawValue:this.state.gl_val,
                     token:this.state.token
                 },
@@ -293,6 +293,8 @@ export default Form.create()(class LotteryForm extends React.Component {
                     pictureUrl:theD.pictureUrl,
                     prizeUrl:theD.prizeUrl,
                     keys:theD.keys,
+                    releaseName:theD.releaseName,
+                    releaseWechat:theD.releaseWechat,
                     name:theD.name,
                     type:theD.type,
                     drawType:theD.drawType,
@@ -483,6 +485,24 @@ export default Form.create()(class LotteryForm extends React.Component {
                                     label="赞助"
                                 >
                                 {this.state.sponsorshipType===1?<span>赞助商-{this.state.sponsor}</span>:this.state.sponsorshipType===0?'猜奖官方':''}
+                            </Form.Item>       
+                        </div>
+                        <div className="clearBoth"> 
+                        <Form.Item 
+                            style={{width:'50%',float:'left'}}
+                                wrapperCol={{span:12}}
+                                labelCol={{span:8}}
+                                label="微信昵称"
+                                >
+                                <span>{this.state.releaseName}</span> 
+                            </Form.Item>  
+                            <Form.Item
+                                style={{width:'50%',float:'left'}}
+                                wrapperCol={{span:12}}
+                                labelCol={{span:8}}
+                                label="微信号"
+                                >
+                                <span>{this.state.releaseWechat}</span> 
                             </Form.Item>       
                         </div>
                         <div className="clearBoth">
