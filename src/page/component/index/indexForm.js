@@ -648,7 +648,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 {this.state.pictureUrl.length?<img alt="主题图片" style={{width:200,height:100}} src={window.imgApi+this.state.pictureUrl[0]}/>:''}
                             </Form.Item>
                         </div>
-                        {this.state.drawType!==2?<div className="clearBoth">
+                        {this.state.drawType==0&&<div className="clearBoth">
                             <Form.Item 
                                 wrapperCol={{span:12}}
                                 labelCol={{span:4}}
@@ -661,7 +661,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                     <span>乙方 - {this.state.rightVal}</span>
                                 </div>
                             </Form.Item>
-                        </div>:<div className="clearBoth">
+                        </div>}
+                        {this.state.drawType==2&&<div className="clearBoth">
                             <Form.Item 
                                 wrapperCol={{span:18}}
                                 labelCol={{span:4}}

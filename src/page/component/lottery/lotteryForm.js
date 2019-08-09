@@ -434,7 +434,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                             <Form.Item 
                                 wrapperCol={{span:18}}
                                 labelCol={{span:4}}
-                                label="概率值"
+                                label="数值"
                             >
                                 {!this.state.callResult?
                                     <Input  style={{width:200}}

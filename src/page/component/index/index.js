@@ -134,7 +134,11 @@ export class Index extends React.Component {
                         let winValue=''
                         topicList.map(item=>{
                             if(item.status){
-                                winValue=item.content
+                                if(thisdata.drawType==1){
+                                    winValue=item.drawValue 
+                                }else{
+                                    winValue=item.content
+                                }
                             }
                             name.push(item.content)
                             keys.push(item.id)
