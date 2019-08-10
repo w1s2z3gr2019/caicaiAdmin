@@ -107,7 +107,7 @@ export class User extends React.Component {
                             province: thisdata.province,
                             city: thisdata.city,
                             area: thisdata.area,
-                            citys:thisdata.province+'-'+thisdata.city+'-'+thisdata.area,
+                            citys:thisdata.province?thisdata.province+'-'+thisdata.city+'-'+thisdata.area:'',
                             address: thisdata.address,
                             contactNumber: thisdata.contactNumber,
                             raffleCount: thisdata.raffleCount,

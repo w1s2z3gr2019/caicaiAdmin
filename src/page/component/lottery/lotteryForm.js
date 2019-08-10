@@ -6,6 +6,7 @@ import { dataTool} from '../../../tools.js';
 import '../index/index.less';
 import {topic} from '../../../dataDic'
 import moment from 'moment';
+import '../quill.snow.css';
 
 let id = 0;
 let endTimes = dataTool.nowTime().split(' '),
@@ -121,6 +122,13 @@ export default Form.create()(class LotteryForm extends React.Component {
             loading:true
         })
         let theData = this.props.data||{};
+        let list  = [];
+        theData.topicList.map(item=>{
+            list.push({
+                id:item.id,
+                content:item.content,
+            })
+        })
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -143,7 +151,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                 status:theData.status,
                 drawTimes:this.state.beginTime,
                 endTimes:this.state.endTime,
-                topicList:JSON.stringify(theData.topicList)
+                topicList:JSON.stringify(list)
             },
             success:function(data){
                 if (data.error.length>0) {
@@ -218,9 +226,9 @@ export default Form.create()(class LotteryForm extends React.Component {
         $.ajax({
             method: "get",
             dataType: "json",
-            url: window.url + "/api/admin/selectUser",
+            url: window.url + "/api/portal/selectByTcUser",
             data:{
-                tid:id,
+                id:id,
                 pageNo: 1,
                 pageSize:9999999,
                 token:locaData.token
@@ -318,7 +326,9 @@ export default Form.create()(class LotteryForm extends React.Component {
                     topicList:theD.topicList,
                     publicUrl:theD.publicUrl
                 });
+               
             }
+           
             this.setState({
                 winId:undefined,
                 visible:nextProps.visible
@@ -367,8 +377,12 @@ export default Form.create()(class LotteryForm extends React.Component {
             }
         })
     }
-    componentDidMount(a,b) {
+    componentDidUpdate(a,b) {
         this.state.token=dataTool.token();
+        let contentTxt =document.getElementById('contentTxt');
+        console.log(contentTxt)
+        if(!contentTxt) return;
+        contentTxt.innerHTML = this.props.data&&this.props.data.content
     }
     render() {
         const {
@@ -539,7 +553,9 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="活动内容"
                             >
-                               <span>{theData.content}</span>
+                               <div  className="ql-container">
+                                    <div id="contentTxt" className="ql-editor"></div>
+                               </div>
                             </Form.Item>
                         </div>
                         {theData.status!==3? <div className="clearBoth"> 

@@ -8,6 +8,7 @@ import './index.less';
 import CropBlock from '../crop/cropBlock';
 import {PicturesWall} from '../picture/picture'
 import moment from 'moment';
+import {Editors} from '../richTextEditors'
 
 let id = 0;
 let endTimes = dataTool.nowTime().split(' '),
@@ -225,6 +226,7 @@ export default Form.create()(class IndexForm extends React.Component {
             }.bind(this)
         })
     }
+    
     add = () => {
         const { form } = this.props;
         // can use data-binding to get
@@ -235,10 +237,9 @@ export default Form.create()(class IndexForm extends React.Component {
         form.setFieldsValue({
           keys: nextKeys,
         });
-    }; 
+    }
     componentWillReceiveProps(nextProps){
         if (!this.props.visible && nextProps.visible){
-
             if(!nextProps.data.id){
                 this.setState({
                     pictureUrl:[],
@@ -252,7 +253,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     rightVal:'',
                     frequency:(this.props.circelData)[0].id,
                     sponsor:'',
-                    content:'',
+                    content:' ',
                     link:[],
                     releaseWechat:'',
                     releaseName:'',
@@ -361,6 +362,7 @@ export default Form.create()(class IndexForm extends React.Component {
                 frequency=item.title
             }
           })
+          console.log(this.state.content)
         return (
           <div> 
                 <Modal
@@ -421,7 +423,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                         }],
                                         initialValue: theData.title
                                     })(
-                                        <Input style={{width:240}} placeholder="活动标题" maxLength={500}/>
+                                        <Input style={{width:'80%'}} placeholder="活动标题" maxLength={500}/>
                                     )}
                                 </Form.Item>
                             </div>
@@ -596,16 +598,13 @@ export default Form.create()(class IndexForm extends React.Component {
                                     </Checkbox.Group>
                                 </Form.Item>
                             </div>
-                            <div className="clearBoth">
-                                <Form.Item
-                                    wrapperCol={{span:18}}
-                                    labelCol={{span:4}}
-                                    label="活动内容"
-                                >
-                                    <TextArea rows={4} 
-                                        value={this.state.content} 
-                                        onChange={(e)=>{this.setState({content:e.target.value})}}/>
-                                </Form.Item>
+                            <div className="clearBoth" style={{width:'100%',height:300}}>
+                                <Editors textContent={this.state.content} 
+                                    uploadUrl={window.url+'/api/admin/uploadPicture'}
+                                    uploadSign={'cover_picture'}
+                                    handleRichText={(value) => { this.state.content = value; }}
+                                    visible={this.state.visible} />
+
                             </div>
                             <div className="clearBoth">
                                 <Form.Item  
@@ -758,6 +757,7 @@ export default Form.create()(class IndexForm extends React.Component {
                             >
                                <span>{theData.content}</span>
                             </Form.Item>
+                           
                         </div>
                         <div className="clearBoth" >
                             {theData.status!=3&&<Form.Item  
