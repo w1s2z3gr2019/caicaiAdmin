@@ -62,6 +62,8 @@ export default Form.create()(class LotteryForm extends React.Component {
         });
     };
     okResult=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         if(this.state.result||this.state.gl_val||this.state.result=='0'){
             this.setState({
                 loading:true
@@ -105,6 +107,8 @@ export default Form.create()(class LotteryForm extends React.Component {
     }
     //修改
     save=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         let beginT =  this.state.beginTime;
         let endTime = this.state.endTime;
         let beg = new Date(beginT).getTime(),
@@ -116,7 +120,6 @@ export default Form.create()(class LotteryForm extends React.Component {
         this.setState({
             loading:true
         })
-        console.log(this.props.data)
         let theData = this.props.data||{};
         $.ajax({
             type: "POST",
@@ -167,6 +170,8 @@ export default Form.create()(class LotteryForm extends React.Component {
     }
     //撤销
     cancel=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.setState({
             loading:true
         })
@@ -204,6 +209,8 @@ export default Form.create()(class LotteryForm extends React.Component {
     }
      //获取列表数据；
      loadData=(id) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         this.setState({
             loading: true
@@ -319,6 +326,8 @@ export default Form.create()(class LotteryForm extends React.Component {
         }
     }
     kaiJ=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         if(!this.state.callResult){
             message.warning('请先确定答案');
             return;

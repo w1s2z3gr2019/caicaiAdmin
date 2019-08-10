@@ -99,6 +99,8 @@ export class Lottery extends React.Component {
     }
     //获取列表数据；
     loadData=(pageNo=1) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         pageS = dataTool.windowH;
         pageNub = pageS();
@@ -236,6 +238,8 @@ export class Lottery extends React.Component {
     }
     //周期字典数据
     cicleData=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         $.ajax({
             method: "get",

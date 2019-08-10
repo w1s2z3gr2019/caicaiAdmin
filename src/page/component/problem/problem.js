@@ -62,6 +62,8 @@ export class Problem extends React.Component {
     }
     //获取列表数据；
     loadData=(pageNo=1) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         pageS = dataTool.windowH;
         pageNub = pageS();
@@ -151,6 +153,8 @@ export class Problem extends React.Component {
         this.loadData();
     }
     del=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         let rowItem = this.state.selectedRowKeys[0];
         let data = this.state.dataSource ||[];

@@ -25,6 +25,8 @@ export default Form.create()(class AccountForm extends React.Component {
     }
     handleSubmit=(e)=>{
         e.preventDefault();
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.props.form.validateFields((err, values) => {
             console.log(values)
             if (!err) {

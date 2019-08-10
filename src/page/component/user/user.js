@@ -51,13 +51,13 @@ export class User extends React.Component {
                 },
                 {
                     title: '猜奖数',
-                    dataIndex: 'countN',
-                    key: 'countN'
+                    dataIndex: 'raffleCount',
+                    key: 'raffleCount'
                 },
                 {
                     title: '中奖数',
-                    dataIndex: 'countY',
-                    key: 'countY'
+                    dataIndex: 'winCount',
+                    key: 'winCount'
                 },
                 {
                     title: '联系方式',
@@ -70,6 +70,8 @@ export class User extends React.Component {
     }
     //获取列表数据；
     loadData=(pageNo=1) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         pageS = dataTool.windowH;
         pageNub = pageS();
@@ -108,8 +110,8 @@ export class User extends React.Component {
                             citys:thisdata.province+'-'+thisdata.city+'-'+thisdata.area,
                             address: thisdata.address,
                             contactNumber: thisdata.contactNumber,
-                            countN: thisdata.countN,
-                            countY: thisdata.countY,
+                            raffleCount: thisdata.raffleCount,
+                            winCount: thisdata.winCount,
                         });
                     };
                 }

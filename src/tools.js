@@ -24,6 +24,14 @@ export var dataTool= {
         }
         return val;
     },
+    redefinitionLogin(){
+        let userInfo = window.localStorage.getItem('userInfo'),state=false;
+        if(!userInfo){
+            state=true;
+            window.location.hash="";
+            return state;
+        }
+    },
     luckDrawTypeVal:function(x){
         let val = '';
         if(x||x===0){

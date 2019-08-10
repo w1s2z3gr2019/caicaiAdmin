@@ -45,6 +45,8 @@ export default Form.create()(class IndexForm extends React.Component {
     }
     handleSubmit=(e,status)=>{
         e.preventDefault();
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 if(!this.state.pictureUrl.length){
@@ -186,6 +188,8 @@ export default Form.create()(class IndexForm extends React.Component {
     };
     //撤销
     cancel=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.setState({
             loading:true
         });
@@ -296,7 +300,7 @@ export default Form.create()(class IndexForm extends React.Component {
         }
     }
     componentDidMount(a,b) {
-        this.state.token=dataTool.token();
+        this.state.token=dataTool.token()||'';
     }
     render() {
         const {

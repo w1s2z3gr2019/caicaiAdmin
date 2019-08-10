@@ -98,6 +98,8 @@ export class Index extends React.Component {
     }
     //获取列表数据；
     loadData=(pageNo=1) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         pageS = dataTool.windowH;
         pageNub = pageS();
@@ -119,7 +121,7 @@ export class Index extends React.Component {
                 status:this.state.status,
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
-                token:locaData.token
+                token:locaData&&locaData.token
             },
             success: function (data) {
                 let arrData=[];
@@ -175,22 +177,22 @@ export class Index extends React.Component {
                             keys:keys,
                         });
                     };
-                }
-                this.setState({
-                    pagination:{
-                        current:pageNo,
-                        pageSize:pageNub,
-                        total:data.data.totalCount
-                    }
-                })
-                if(data.data&&!data.data.list.length){
-					this.setState({
+                    this.setState({
                         pagination:{
-                            current:0,
-                            total:0
+                            current:pageNo,
+                            pageSize:pageNub,
+                            total:data.data.totalCount
                         }
                     })
-                };
+                    if(data.data&&!data.data.list.length){
+                        this.setState({
+                            pagination:{
+                                current:0,
+                                total:0
+                            }
+                        })
+                    };
+                }
                 this.setState({
                     loading:false,
                     dataSource: arrData,
@@ -248,6 +250,8 @@ export class Index extends React.Component {
     }
     //周期字典数据
     cicleData=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         $.ajax({
             method: "get",

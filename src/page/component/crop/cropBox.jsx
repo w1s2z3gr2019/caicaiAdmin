@@ -5,6 +5,7 @@ import $ from 'jquery';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import {Button,Modal,Divider, message ,Spin} from 'antd'
+import {dataTool} from '../../../tools';
 
 class CropBox extends Component {
 	constructor(props) {
@@ -63,6 +64,8 @@ class CropBox extends Component {
 	}
 
 	submitUpload=(imgBlob)=> {
+		let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
 		var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
 		let _this = this;
 		let fd = new FormData();

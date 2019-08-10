@@ -52,6 +52,8 @@ export class Naming extends React.Component {
     }
     //获取列表数据；
     loadData=(pageNo=1) => {
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         pageS = dataTool.windowH;
         pageNub = pageS();
@@ -140,6 +142,8 @@ export class Naming extends React.Component {
         this.loadData();
     }
     del=()=>{
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         let rowItem = this.state.selectedRowKeys[0];
         let data = this.state.dataSource ||[];
         let pk =data[rowItem]

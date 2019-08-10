@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js'
 import $ from 'jquery/src/ajax';
 import './left.css';
 import {regularData} from '../../dataDic.js';
-
+import {dataTool}  from '../../tools'
 
 
 export default Form.create()(class ModifyPass extends React.Component {
@@ -28,6 +28,8 @@ export default Form.create()(class ModifyPass extends React.Component {
     
     handleSubmit=(e)=>{
         e.preventDefault();
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let passpatt =regularData.pass;
@@ -45,9 +47,9 @@ export default Form.create()(class ModifyPass extends React.Component {
                         "Content-Type": "application/json;charset=UTF-8"
                     },
                     dataType: "json",
-                    url: window.globalConfig.context+'/visitwindows/changePassword' ,
+                    url: window.url+'/visitwindows/changePassword' ,
                     data: JSON.stringify({
-                       operatorId: this.state.locaData.operatorId,
+                       operatorId: this.state.locaData.name,
                        oldPassword:values.oldPassword,
                        newPassword:values.newPassword,
                        token:this.state.locaData.token,

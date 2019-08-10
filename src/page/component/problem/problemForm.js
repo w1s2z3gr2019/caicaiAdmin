@@ -27,6 +27,8 @@ export default Form.create()(class ProblemForm extends React.Component {
     }
     handleSubmit=(e,status)=>{
         e.preventDefault();
+        let urlState = dataTool.redefinitionLogin();
+        if(urlState) return;
         this.props.form.validateFields((err, values) => {
             console.log(values)
             if (!err) {
