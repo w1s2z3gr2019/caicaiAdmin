@@ -1,8 +1,9 @@
 import React from 'react';
-import {Form,Button,Modal, message,Spin,Input } from 'antd';
+import {Form,Button,Modal, message,Spin,Input,Select } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import { dataTool} from '../../../tools.js';
+import {activeType} from '../../../dataDic';
 
 const { TextArea } = Input;
 export default Form.create()(class NamingForm extends React.Component {
@@ -113,6 +114,26 @@ export default Form.create()(class NamingForm extends React.Component {
                                         initialValue: theData.title
                                     })(
                                         <Input placeholder="标题名称" maxLength={50}/>
+                                    )}
+                                </Form.Item>
+                                <Form.Item
+                                    wrapperCol={{span:14}}
+                                    labelCol={{span:6}}
+                                    label="话题分类"
+                                >
+                                    {getFieldDecorator('type', {
+                                        rules: [{
+                                            required: true, message: '请选择话题分类',
+                                        }],
+                                        initialValue: theData.type
+                                    })(
+                                        <Select  placeholder="话题周期分类" >
+                                            { 
+                                                activeType.map(function (item) {
+                                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
                                     )}
                                 </Form.Item>
                             </div>

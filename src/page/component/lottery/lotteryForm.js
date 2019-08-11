@@ -377,13 +377,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             }
         })
     }
-    componentDidUpdate(a,b) {
-        this.state.token=dataTool.token();
-        let contentTxt =document.getElementById('contentTxt');
-        console.log(contentTxt)
-        if(!contentTxt) return;
-        contentTxt.innerHTML = this.props.data&&this.props.data.content
-    }
+   
     render() {
         const {
             getFieldDecorator,getFieldValue 
@@ -553,9 +547,11 @@ export default Form.create()(class LotteryForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="活动内容"
                             >
-                               <div  className="ql-container">
-                                    <div id="contentTxt" className="ql-editor"></div>
-                               </div>
+                            <div id="contentTxt" className="ql-container">
+                                <div className="ql-editor">
+                                    <div dangerouslySetInnerHTML={{ __html:theData.content}}></div>
+                                </div>
+                            </div>
                             </Form.Item>
                         </div>
                         {theData.status!==3? <div className="clearBoth"> 

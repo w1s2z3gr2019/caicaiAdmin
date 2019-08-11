@@ -125,6 +125,11 @@ export class LeftMenu extends React.Component {
                                     <span>开奖管理</span>
                                 </NavLink>
                             </Menu.Item>
+                            <Menu.Item key="3">
+                                <NavLink to='/page/topicRecord' replace>
+                                    <span>开奖记录</span>
+                                </NavLink>
+                            </Menu.Item>
                         </SubMenu>
                         <SubMenu
                             key="sub2"

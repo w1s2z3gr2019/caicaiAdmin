@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form,Button,Modal, DatePicker,message,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
+import {Form,Button,Modal, DatePicker,message,Tag,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import {luckDrawType,topic,sponsorData} from '../../../dataDic.js';
@@ -9,7 +9,7 @@ import CropBlock from '../crop/cropBlock';
 import {PicturesWall} from '../picture/picture'
 import moment from 'moment';
 import {Editors} from '../richTextEditors'
-
+import '../quill.snow.css';
 let id = 0;
 let endTimes = dataTool.nowTime().split(' '),
 endT = endTimes[0]+' 00:00:00';
@@ -300,6 +300,77 @@ export default Form.create()(class IndexForm extends React.Component {
             })
         }
     }
+    renderyear = (end) => {
+        return (
+          <div>
+            <Tag color="#108ee9" onClick={()=>this.TagClick(end,1)} data-value="年初">
+              今天
+            </Tag>
+            <Tag color="#108ee9" onClick={()=>this.TagClick(end,2)} data-value="年初">
+                明天
+            </Tag>
+            <Tag color="#108ee9" onClick={()=>this.TagClick(end,3)} data-value="年末">
+              下周
+            </Tag>
+            <Tag color="#108ee9" onClick={()=>this.TagClick(end,4)} data-value="年末">
+              下月
+            </Tag>
+          </div>
+        );
+      }
+      TagClick=(type,time)=>{
+        let t = '';
+        let nowT = new Date(),tosT,tosYmd,s,ts,totalT,newT,newTos,new_TosYmd;
+        switch(time){
+            case 1: //今天
+                    tosT = nowT.toLocaleDateString();
+                    tosYmd = tosT.replace(/\//img,'-');
+                    t =  tosYmd+' 00:00:00' 
+            break;
+            case 2: //明天
+                    s = 24*60*60*1000;
+                    ts =nowT.getTime();
+                    totalT = ts+s;
+                    newT = new Date(totalT);
+                    newTos = newT.toLocaleDateString();
+                    new_TosYmd = newTos.replace(/\//img,'-');
+                    t =  new_TosYmd+' 00:00:00' 
+            break;
+            case 3://下周
+                    s = 7*24*60*60*1000;
+                    ts =nowT.getTime();
+                    totalT = ts+s;
+                    newT = new Date(totalT);
+                    newTos = newT.toLocaleDateString();
+                    new_TosYmd = newTos.replace(/\//img,'-');
+                    t =  new_TosYmd+' 00:00:00';
+            break;
+            case 4: //下月
+            let y = nowT.getFullYear(),
+                m = nowT.getMonth()+1,
+                d =nowT.getDate()>9?nowT.getDate():'0'+nowT.getDate();
+                if(m+1>12){
+                    m=1
+                }else{
+                    m++;
+                }
+                m=m<10?'0'+m:m;
+                t=y+'-'+m+'-'+d+' 00:00:00';
+            break;
+        }
+        if(type){
+            this.setState({
+                endTime:t
+            })
+        }else{
+            this.setState({
+                beginTime:t
+            })
+        }
+      }
+      changTime=()=>{
+
+      }
     componentDidMount(a,b) {
         this.state.token=dataTool.token()||'';
     }
@@ -362,7 +433,6 @@ export default Form.create()(class IndexForm extends React.Component {
                 frequency=item.title
             }
           })
-          console.log(this.state.content)
         return (
           <div> 
                 <Modal
@@ -542,8 +612,10 @@ export default Form.create()(class IndexForm extends React.Component {
                                     label="开奖时间"
                                 >
                                 <DatePicker 
+                                    renderExtraFooter={()=>this.renderyear(0)}        
                                     allowClear={false}
-                                    showTime placeholder="选择开奖时间" onChange={(e,str)=>{
+                                    showTime
+                                    placeholder="选择开奖时间" onChange={(e,str)=>{
                                         this.setState({
                                             beginTime:str
                                         })
@@ -556,8 +628,10 @@ export default Form.create()(class IndexForm extends React.Component {
                                     label="截止时间"
                                 >
                                 <DatePicker 
+                                    renderExtraFooter={()=>this.renderyear(1)} 
                                     allowClear={false}
-                                    showTime placeholder="选择截止时间" onChange={(e,str)=>{
+                                    showTime
+                                    placeholder="选择截止时间" onChange={(e,str)=>{
                                         this.setState({
                                             endTime:str
                                         })
@@ -755,9 +829,12 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="活动内容"
                             >
-                               <span>{theData.content}</span>
+                                <div id="contentTxt" className="ql-container">
+                                    <div className="ql-editor">
+                                        <div dangerouslySetInnerHTML={{ __html:theData.content}}></div>
+                                    </div>
+                                </div>
                             </Form.Item>
-                           
                         </div>
                         <div className="clearBoth" >
                             {theData.status!=3&&<Form.Item  

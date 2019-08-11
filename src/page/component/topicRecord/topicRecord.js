@@ -2,7 +2,7 @@ import React from 'react';
 import {Button,Input,Switch,Table,Spin,Icon,message,Tooltip,Select} from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import IndexForm from './indexForm.js';
+import TopicRecordForm from './topicRecordForm.js';
 import {dataTool} from '../../../tools.js';
 import {luckDrawType,topic,status} from '../../../dataDic'
 import './index.less'
@@ -10,7 +10,7 @@ import './index.less'
 var pageS = dataTool.windowH,pageNub = pageS();
  //默认时间
 
-export class Index extends React.Component {
+export class TopicRecord extends React.Component {
     constructor(props){
         super(props);
         this.state = { 
@@ -119,7 +119,7 @@ export class Index extends React.Component {
                 frequency:this.state.frequency,
                 drawType:this.state.drawType,
                 title:this.state.title,
-                status:this.state.status,
+                status:3,
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
                 token:locaData&&locaData.token
@@ -209,12 +209,6 @@ export class Index extends React.Component {
             }.bind(this)
         });
     }
-    addClick=()=>{
-        this.setState({
-            theData:{},
-            visibleForm:true
-        })
-    }
     callbackPass=(state)=>{
         this.setState({
             theData:{},
@@ -237,19 +231,13 @@ export class Index extends React.Component {
     search=()=>{
         this.loadData();
     }
-     //修改触发弹框；
-    save=()=>{
-        let rowItem = this.state.selectedRowKeys[0];
-        let data = this.state.dataSource ||[];
-        this.setState({
-            visibleForm:true,
-            theData:data[rowItem],
-        });
-    }
+   
     tableRowClick=(record, index) =>{
         this.setState({
+            visibleForm:true,
+            theData:record,
             selectedRowKeys: [record.key]
-        });
+        });             
     }
     //周期字典数据
     cicleData=()=>{
@@ -279,46 +267,6 @@ export class Index extends React.Component {
                     loading:false
                 });
                 message.error('系统错误,请联系管理员.')
-            }.bind(this)
-        })
-    }
-    del=()=>{
-        let urlState = dataTool.redefinitionLogin();
-        if(urlState) return;
-        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
-        let rowItem = this.state.selectedRowKeys[0];
-        let data = this.state.dataSource ||[];
-        let pk =data[rowItem]
-        this.setState({
-            loading:true
-        })
-        $.ajax({
-            method: "post",
-            dataType: "json",
-            url: window.url + "/api/admin/delectTC",
-            data:{
-                id:pk.id,
-                token:locaData.token
-            },
-            success: function (data) {
-                if(data.error.length>0){
-                    message.warning(data.error[0].message);
-                    return;
-                }
-                message.success('删除成功');
-                let pageNo=this.state.page;
-                if((this.state.dataSource.length==1)&&(this.state.pagination.nextPage==this.state.pagination.current)){
-                    if(pageNo>1){
-                        pageNo--
-                    }
-                }
-                this.loadData(pageNo)
-            }.bind(this),
-            error:function(err){
-                this.setState({
-                    loading:false
-                });
-                message.error('数据访问异常');
             }.bind(this)
         })
     }
@@ -356,46 +304,23 @@ export class Index extends React.Component {
                             className="inpWin"
                             value={this.state.title}
                             onChange={(e) => { this.setState({ title: e.target.value }); }} />
-                        
-                        <Select  className="inpWin" 
-                            value={this.state.status} 
-                            onChange={(e)=>{this.setState({status:e})}} 
-                            placeholder="状态" >
+                        <Select className="inpWin" 
+                            value={this.state.type} 
+                            onChange={(e)=>{this.setState({type:e})}} 
+                            placeholder="话题分类" >
                             { 
-                                status.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
+                                topic.map(function (item) {
+                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>
-                        <Button type="primary" onClick={this.search}  >搜索</Button>
-                        <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
-                        <Button type="danger" onClick={this.del} disabled={!hasSelected} style={{marginRight:10}}>删除</Button>
-                        <span style={{marginRight:'20px'}}>更多搜索    <Switch defaultChecked={false} onChange={()=>{ 
-                            this.setState({
-                            searchMore: !this.state.searchMore
-                            });}} /></span>
-                            <div style={{float:'right',overflow:'hidden'}}>
-                            <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
-                            <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
-                        </div>
-                        <div  style={this.state.searchMore ? { display: 'none' } : {display: 'inline-block',marginTop:10}}>
-                            <Select placeholder="抽奖类型" 
+                        <Select placeholder="抽奖类型" 
                                 className="inpWin"
                                 value={this.state.drawType}
                                 onChange={(e)=>{this.setState({drawType:e})}}
                                 >
                                 { 
                                     luckDrawType.map(function (item) {
-                                        return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
-                                    })
-                                }
-                            </Select>
-                            <Select className="inpWin" 
-                                value={this.state.type} 
-                                onChange={(e)=>{this.setState({type:e})}} 
-                                placeholder="话题分类" >
-                                { 
-                                    topic.map(function (item) {
                                         return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                     })
                                 }
@@ -410,8 +335,8 @@ export class Index extends React.Component {
                                     })
                                 }
                             </Select>
-                        </div>
-                        
+                        <Button type="primary" onClick={this.search}  >搜索</Button>
+                        <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                     </div>
                     <div className="patent-table">
                         <Table columns={columns}
@@ -427,7 +352,7 @@ export class Index extends React.Component {
                             />
                     </div>
                 </Spin>
-                <IndexForm 
+                <TopicRecordForm 
                     circelData={circelData}
                     visible={this.state.visibleForm}
                     callbackPass={this.callbackPass}

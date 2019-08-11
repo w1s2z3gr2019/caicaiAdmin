@@ -8,6 +8,7 @@ import {Problem} from './problem/problem';
 import {Account} from './system/account/account';
 import {Naming} from './naming/naming';
 import {Lottery} from './lottery/lottery';
+import {TopicRecord} from './topicRecord/topicRecord';
 import './left.css';
 
 export class ContentAdmin extends React.Component {
@@ -27,6 +28,7 @@ export class ContentAdmin extends React.Component {
               <Route path='/page/account' component={Account}/>
               <Route path='/page/naming' component={Naming}/>
               <Route path='/page/lottery' component={Lottery}/>
+              <Route path='/page/topicRecord' component={TopicRecord}/>
             </div>
         </div>
       )

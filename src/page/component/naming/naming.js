@@ -224,7 +224,7 @@ export class Naming extends React.Component {
                         <Button type="danger" onClick={this.del} disabled={!hasSelected} >删除</Button>
                         <div style={{float:'right'}}>
                             <Button type="primary" style={{marginRight:10}} onClick={this.save} disabled={!hasSelected} >修改</Button>
-                           {/*<Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>*/}
+                            <Button type="primary" onClick={this.addClick} >创建<Icon type="plus" /></Button>
                         </div>
                     </div>
                     <div className="patent-table">
