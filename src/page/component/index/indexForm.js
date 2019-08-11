@@ -2,7 +2,7 @@ import React from 'react';
 import {Form,Button,Modal, DatePicker,message,Tag,Spin,Input,Select,Icon,Divider,Checkbox } from 'antd';
 import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
-import {luckDrawType,topic,sponsorData} from '../../../dataDic.js';
+import {luckDrawType,topic,sponsorData,activeType} from '../../../dataDic.js';
 import { dataTool} from '../../../tools.js';
 import './index.less';
 import CropBlock from '../crop/cropBlock';
@@ -23,7 +23,7 @@ export default Form.create()(class IndexForm extends React.Component {
             names:[],
             visible:false,
             loading:false,
-            frequency:1,
+            frequency:0,
             type:0,
             drawType:0,
             sponsorshipType:0,
@@ -251,7 +251,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     sponsorshipType:undefined,
                     leftVal:'',
                     rightVal:'',
-                    frequency:(this.props.circelData)[0].id,
+                    frequency:0,
                     sponsor:'',
                     content:' ',
                     link:[],
@@ -427,12 +427,12 @@ export default Form.create()(class IndexForm extends React.Component {
             </Form.Item>
           ));
           const circelData =this.props.circelData||[];
-          let frequency;
-          circelData.map(item=>{
-            if(theData.frequency==item.id){
-                frequency=item.title
-            }
-          })
+        //   let frequency;
+        //   circelData.map(item=>{
+        //     if(theData.frequency==item.id){
+        //         frequency=item.title
+        //     }
+        //   })
         return (
           <div> 
                 <Modal
@@ -461,8 +461,8 @@ export default Form.create()(class IndexForm extends React.Component {
                                         </Select>
                                         <Select  className="left" value={this.state.frequency} onChange={(e)=>{this.setState({frequency:e})}} style={{width:120,margin:'0 10px'}} placeholder="话题频率" >
                                             { 
-                                                circelData.map(function (item) {
-                                                    return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                                activeType.map(function (item) {
+                                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
                                                 })
                                             }
                                         </Select>
@@ -705,7 +705,7 @@ export default Form.create()(class IndexForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="话题分类"
                             >
-                                <span className="selMore">{dataTool.topicVal(theData.type)+' - '+frequency+' - '+dataTool.luckDrawTypeVal(theData.drawType)}</span>
+                                <span className="selMore">{dataTool.topicVal(theData.type)+' - '+theData.frequencyValue+' - '+dataTool.luckDrawTypeVal(theData.drawType)}</span>
                             </Form.Item>
                         </div>
                         <div className="clearBoth"> 

@@ -21,15 +21,15 @@ module.exports={
     ],
     activeType:[
         {
-            value:1,
+            value:0,
             key:'每日'
         },
         {
-            value:2,
+            value:1,
             key:'每周'
         },
         {
-            value:3,
+            value:2,
             key:'每月'
         }
     ],

@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import IndexForm from './indexForm.js';
 import {dataTool} from '../../../tools.js';
-import {luckDrawType,topic,status} from '../../../dataDic'
+import {luckDrawType,topic,status,activeType} from '../../../dataDic'
 import './index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
@@ -14,6 +14,7 @@ export class Index extends React.Component {
     constructor(props){
         super(props);
         this.state = { 
+            status:undefined,
             selectedRowKeys: [],
             selectedRows: [],
             loading:false,
@@ -49,6 +50,11 @@ export class Index extends React.Component {
                     render:(text)=>{
                         return dataTool.luckDrawTypeVal(text);
                     }  
+                },
+                {
+                    title: '周期分类',
+                    dataIndex: 'frequencyValue',
+                    key: 'frequencyValue',
                 },
                 {
                     title: '活动分类',
@@ -119,7 +125,7 @@ export class Index extends React.Component {
                 frequency:this.state.frequency,
                 drawType:this.state.drawType,
                 title:this.state.title,
-                status:this.state.status,
+                status:this.state.status||6,
                 pageNo: pageNo || 1,
                 pageSize:pageNub,
                 token:locaData&&locaData.token
@@ -405,8 +411,8 @@ export class Index extends React.Component {
                                 onChange={(e)=>{this.setState({frequency:e})}} 
                                 placeholder="周期分类" >
                                 { 
-                                    circelData.map(function (item) {
-                                        return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                    activeType.map(function (item) {
+                                        return	<Select.Option value={item.value} key={item.key}>{item.value}</Select.Option>
                                     })
                                 }
                             </Select>

@@ -40,6 +40,7 @@ export default Form.create()(class NamingForm extends React.Component {
                     url: window.url+api ,
                     data: {
                         title:values.title,
+                        type:values.type,
                         id:this.props.data.id,
                         token:this.state.token
                     },
