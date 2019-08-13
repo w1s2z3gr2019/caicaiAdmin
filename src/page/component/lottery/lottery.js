@@ -173,7 +173,7 @@ export class Lottery extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.data.totalCount
+                        total:data.data&&data.data.totalCount
                     }
                 })
                 if(data.data&&!data.data.list.length){

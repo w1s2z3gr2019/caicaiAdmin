@@ -55,6 +55,10 @@ export class Index extends React.Component {
                     title: '周期分类',
                     dataIndex: 'frequencyValue',
                     key: 'frequencyValue',
+                    render:(text,recard)=>{
+                        return <Tooltip placement="topLeft" title={recard.frequencyValue}>{recard.frequencyStatusValue}</Tooltip>
+                      
+                    }
                 },
                 {
                     title: '活动分类',
@@ -135,6 +139,7 @@ export class Index extends React.Component {
                 if(data.error.length){
                     message.warning(data.error[0].message);
                 }else{
+                    if(!data.data) return;
                     let theArr = data.data.list;
                     for (let i = 0; i < theArr.length; i++) {
                         let thisdata = theArr[i];
@@ -162,6 +167,8 @@ export class Index extends React.Component {
                             type: thisdata.type,
                             userList:thisdata.userList,
                             frequency: thisdata.frequency,
+                            frequencyStatusValue:thisdata.frequencyStatusValue,
+                            frequencyValue:thisdata.frequencyValue,
                             drawType: thisdata.drawType, 
                             title: thisdata.title,
                             content: thisdata.content,
@@ -186,10 +193,10 @@ export class Index extends React.Component {
                     };
                     this.setState({
                         pagination:{
-                            nextPage:data.data.nextPage,
+                            nextPage:data&&data.data.nextPage,
                             current:pageNo,
                             pageSize:pageNub,
-                            total:data.data.totalCount
+                            total:data&&data.data.totalCount
                         }
                     })
                     if(data.data&&!data.data.list.length){
