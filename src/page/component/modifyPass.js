@@ -43,23 +43,19 @@ export default Form.create()(class ModifyPass extends React.Component {
                 }
                 $.ajax({
                     type: "post",
-                    headers: {
-                        "Content-Type": "application/json;charset=UTF-8"
-                    },
                     dataType: "json",
-                    url: window.url+'/visitwindows/changePassword' ,
-                    data: JSON.stringify({
-                       operatorId: this.state.locaData.name,
-                       oldPassword:values.oldPassword,
-                       newPassword:values.newPassword,
-                       token:this.state.locaData.token,
-                       signature:111
-                    }),
+                    url: window.url+'/api/admin/updatePWD' ,
+                    data:{
+                        upwd:values.oldPassword,
+                        npwd:values.newPassword,
+                        rpwd:values.newPassword,
+                        token:this.state.locaData.token,
+                    },
                     success:function(data){
-                        if (data.state!==200) {
-                            message.warning(data.msg);
-                            return ;
-                        };
+                        if(data.error.length>0){
+                            message.warning(data.error[0].message);
+                            return;
+                        }
                         this.setState({
                             visible: true,
                             loading:true
@@ -91,7 +87,7 @@ export default Form.create()(class ModifyPass extends React.Component {
         }
     }
     componentDidMount() {
-        var locaData = JSON.parse(window.localStorage.getItem("data"));
+        var locaData = JSON.parse(window.localStorage.getItem("userInfo"));
         this.setState({
             locaData
         });

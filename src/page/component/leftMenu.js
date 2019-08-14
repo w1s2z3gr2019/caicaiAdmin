@@ -23,7 +23,7 @@ export class LeftMenu extends React.Component {
         });
     }
     handleVisibleChange = (visible) => {
-      //  this.setState({ visible });
+        this.setState({ visible });
     }
     modifyPass = () => {
         this.setState({
@@ -85,7 +85,7 @@ export class LeftMenu extends React.Component {
             <div className="menuWrap">
                 <div className="logoSvg">
                     <Popover
-                       // content={menuExit}
+                        content={menuExit}
                         title="用户设置"
                         placement="rightTop"
                         visible={this.state.visible}
