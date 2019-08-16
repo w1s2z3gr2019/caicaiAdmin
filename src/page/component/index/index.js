@@ -419,7 +419,7 @@ export class Index extends React.Component {
                                 placeholder="周期分类" >
                                 { 
                                     activeType.map(function (item) {
-                                        return	<Select.Option value={item.value} key={item.key}>{item.value}</Select.Option>
+                                        return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                     })
                                 }
                             </Select>

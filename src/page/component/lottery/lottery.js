@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import IndexForm from './lotteryForm.js';
 import {dataTool} from '../../../tools.js';
-import {luckDrawType,topic,status_Bf} from '../../../dataDic'
+import {luckDrawType,topic,status_Bf,activeType} from '../../../dataDic'
 import '../index/index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
@@ -49,6 +49,15 @@ export class Lottery extends React.Component {
                     render:(text)=>{
                         return dataTool.luckDrawTypeVal(text);
                     }  
+                },
+                {
+                    title: '周期分类',
+                    dataIndex: 'frequencyValue',
+                    key: 'frequencyValue',
+                    render:(text,recard)=>{
+                        return <Tooltip placement="topLeft" title={recard.frequencyValue}>{recard.frequencyStatusValue}</Tooltip>
+                      
+                    }
                 },
                 {
                     title: '活动分类',
@@ -146,6 +155,8 @@ export class Lottery extends React.Component {
                             serialNumber: thisdata.serialNumber, 
                             type: thisdata.type,
                             frequency: thisdata.frequency,
+                            frequencyStatusValue:thisdata.frequencyStatusValue,
+                            frequencyValue:thisdata.frequencyValue,
                             drawType: thisdata.drawType, 
                             title: thisdata.title,
                             content: thisdata.content,
@@ -327,21 +338,11 @@ export class Lottery extends React.Component {
                             onChange={(e)=>{this.setState({frequency:e})}} 
                             placeholder="周期分类" >
                             { 
-                                circelData.map(function (item) {
-                                    return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                activeType.map(function (item) {
+                                    return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                 })
                             }
                         </Select>
-                       {/** <Select  className="inpWin" 
-                            value={this.state.status} 
-                            onChange={(e)=>{this.setState({status:e})}} 
-                            placeholder="状态" >
-                            { 
-                                status_Bf.map(function (item) {
-                                    return	<Select.Option value={item.value} key={item.value}>{item.key}</Select.Option>
-                                })
-                            }
-                        </Select> */}
                         <Button type="primary" onClick={this.search}  >搜索</Button>
                         <Button type="primary" onClick={this.reset} style={{margin:'0 10px'}} >重置</Button>
                         <div style={{float:'right',overflow:'hidden'}}>

@@ -4,7 +4,7 @@ import ajax from 'jquery/src/ajax/xhr.js';
 import $ from 'jquery/src/ajax';
 import TopicRecordForm from './topicRecordForm.js';
 import {dataTool} from '../../../tools.js';
-import {luckDrawType,topic,status} from '../../../dataDic'
+import {luckDrawType,topic,status,activeType} from '../../../dataDic'
 import './index.less'
 
 var pageS = dataTool.windowH,pageNub = pageS();
@@ -49,6 +49,15 @@ export class TopicRecord extends React.Component {
                     render:(text)=>{
                         return dataTool.luckDrawTypeVal(text);
                     }  
+                },
+                {
+                    title: '周期分类',
+                    dataIndex: 'frequencyValue',
+                    key: 'frequencyValue',
+                    render:(text,recard)=>{
+                        return <Tooltip placement="topLeft" title={recard.frequencyValue}>{recard.frequencyStatusValue}</Tooltip>
+                      
+                    }
                 },
                 {
                     title: '活动分类',
@@ -153,6 +162,8 @@ export class TopicRecord extends React.Component {
                             id: thisdata.id,
                             winValue:winValue,
                             serialNumber: thisdata.serialNumber, 
+                            frequencyStatusValue:thisdata.frequencyStatusValue,
+                            frequencyValue:thisdata.frequencyValue,
                             type: thisdata.type,
                             userList:thisdata.userList,
                             frequency: thisdata.frequency,
@@ -330,8 +341,8 @@ export class TopicRecord extends React.Component {
                                 onChange={(e)=>{this.setState({frequency:e})}} 
                                 placeholder="周期分类" >
                                 { 
-                                    circelData.map(function (item) {
-                                        return	<Select.Option value={item.id} key={item.id}>{item.title}</Select.Option>
+                                    activeType.map(function (item) {
+                                        return	<Select.Option value={item.value} key={item.key}>{item.key}</Select.Option>
                                     })
                                 }
                             </Select>

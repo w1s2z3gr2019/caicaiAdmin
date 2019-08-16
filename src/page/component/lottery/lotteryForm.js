@@ -65,6 +65,7 @@ export default Form.create()(class LotteryForm extends React.Component {
     okResult=()=>{
         let urlState = dataTool.redefinitionLogin();
         if(urlState) return;
+        console.log(dataTool.token())
         if(this.state.result||this.state.gl_val||this.state.result=='0'){
             this.setState({
                 loading:true
@@ -78,7 +79,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                 data:{
                     id:this.state.gl_val?this.props.data.topicList&&this.props.data.topicList[0].id:this.state.result,
                     drawValue:this.state.gl_val,
-                    token:this.state.token
+                    token:dataTool.token()
                 },
                 success:function(data){
                     if (data.error.length>0) {
@@ -135,7 +136,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             url: window.url+'/api/admin/updateTC' ,
             data: {
                 id:theData.id,
-                token:this.state.token,
+                token:dataTool.token(),
                 type:theData.type,
                 frequency:theData.frequency,
                 drawType:theData.drawType,
@@ -191,7 +192,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             data:{
                 id:this.props.data.id,
                 status:4,
-                token:this.state.token
+                token:dataTool.token()
             },
             success:function(data){
                 if (data.error.length>0) {
@@ -346,6 +347,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             loading:true
         })
         const _this = this;
+       
         $.ajax({
             method:'get',
             dataType:'json',
@@ -353,7 +355,7 @@ export default Form.create()(class LotteryForm extends React.Component {
             data:{
                 id:this.props.data.id,
                 winId:this.state.winId||'',
-                token:this.state.token,
+                token:dataTool.token(),
             },
             success:function(data){
                 if (data.error.length>0) {
