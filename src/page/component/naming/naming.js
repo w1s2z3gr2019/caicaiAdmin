@@ -100,7 +100,7 @@ export class Naming extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.total
+                        total:data.data.totalCount
                     }
                 })
                 if(data.result&&!data.result.length){

@@ -105,7 +105,7 @@ export class Problem extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.totalCount
+                        total:data.data.totalCount
                     }
                 })
                 if(data.data&&!data.data.list.length){

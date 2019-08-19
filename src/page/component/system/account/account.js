@@ -92,7 +92,7 @@ export class Account extends React.Component {
                     pagination:{
                         current:pageNo,
                         pageSize:pageNub,
-                        total:data.totalPage
+                        total:data.data.totalCount
                     }
                 })
                 if(data.data&&!data.data.list.length){
