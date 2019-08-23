@@ -60,6 +60,11 @@ export class User extends React.Component {
                     key: 'winCount'
                 },
                 {
+                    title: '积分',
+                    dataIndex: 'countIntegral',
+                    key: 'countIntegral'
+                },
+                {
                     title: '联系方式',
                     dataIndex: 'contactNumber',
                     key: 'contactNumber'
@@ -112,6 +117,7 @@ export class User extends React.Component {
                             contactNumber: thisdata.contactNumber,
                             raffleCount: thisdata.raffleCount,
                             winCount: thisdata.winCount,
+                            countIntegral:thisdata.countIntegral||0
                         });
                     };
                 }
