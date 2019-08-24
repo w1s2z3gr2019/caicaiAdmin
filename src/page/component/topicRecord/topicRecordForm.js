@@ -181,6 +181,7 @@ export default Form.create()(class TopicRecordForm extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
+                    maskClosable={false}
                     width='800px'
                 >
                 <Form  layout="horizontal">

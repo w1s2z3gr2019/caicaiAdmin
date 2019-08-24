@@ -98,6 +98,7 @@ export default Form.create()(class NamingForm extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
+                    maskClosable={false}
                     width='400px'
                 >
                 <Form  layout="horizontal" onSubmit={this.handleSubmit.bind(this)}>

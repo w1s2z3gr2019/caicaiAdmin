@@ -405,6 +405,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     footer={null}
+                    maskClosable={false}
                     width='800px'
                 >
                 <Form  layout="horizontal">

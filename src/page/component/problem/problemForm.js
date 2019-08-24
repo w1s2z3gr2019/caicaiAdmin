@@ -102,6 +102,7 @@ export default Form.create()(class ProblemForm extends React.Component {
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
+                    maskClosable={false}
                     footer={null}
                     width='600px'
                 >

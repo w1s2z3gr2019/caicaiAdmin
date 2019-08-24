@@ -442,6 +442,8 @@ export default Form.create()(class IndexForm extends React.Component {
                     onCancel={this.handleCancel}
                     footer={null}
                     width='800px'
+                    maskClosable={false}
+
                 >
                 <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
