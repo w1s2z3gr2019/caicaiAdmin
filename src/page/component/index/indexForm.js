@@ -59,20 +59,27 @@ export default Form.create()(class IndexForm extends React.Component {
                     return;
                 }
                
-                let topicList1=[],topicList2=[],topicList3=[];
-                if(values.keys.length){
-                    values.names.map((item,index)=>{
+                let topicList1=[],topicList2=[],topicList3=[],keyArr=[];
+                if(this.state.drawType==2&&values.keys.length){
+                    values.names.map(item=>{
+                        if(item){
+                            keyArr.push(item)
+                        }
+                    })
+                    keyArr.map((item,index)=>{
                         topicList1.push({
                             id:(this.props.data.id&&(this.props.data.keys.length>index))?this.props.data.keys[index]:'',
                             content:item
                         })
                     })
                 }
+            
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>0?this.props.data.keys[0]:'',content:this.state.leftVal});
                 topicList2.push({id:this.props.data.id&&this.props.data.keys.length>1?this.props.data.keys[1]:'',content:this.state.rightVal});
                 topicList3.push({id:this.props.data.id&&this.props.data.keys.length?this.props.data.keys[0]:'',content:'1234'});
                 let api = this.props.data.id?'/api/admin/updateTC':'/api/admin/createTC';
                 let topicList;
+              
                 switch(this.state.drawType){
                     case 0:
                         topicList=topicList2;
@@ -86,6 +93,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     default:
                         break;
                 }
+                console.log(topicList)
                 let state =false;
                 topicList.map(item=>{
                     if(!item.content){
@@ -151,6 +159,7 @@ export default Form.create()(class IndexForm extends React.Component {
                             return ;
                         };
                         this.setState({
+                            content:' ',
                             visible: false,
                             loading:false
                         });
@@ -169,6 +178,7 @@ export default Form.create()(class IndexForm extends React.Component {
     }
     handleCancel = (e) => {
         this.setState({
+            content:' ',
             visible: false,
         });
         this.props.callbackPass(false);
@@ -378,7 +388,6 @@ export default Form.create()(class IndexForm extends React.Component {
         const {
             getFieldDecorator,getFieldValue 
           } = this.props.form;
-         
         const formItemLayout = {
             labelCol: {
               xs: { span: 24 },
@@ -427,12 +436,6 @@ export default Form.create()(class IndexForm extends React.Component {
             </Form.Item>
           ));
           const circelData =this.props.circelData||[];
-        //   let frequency;
-        //   circelData.map(item=>{
-        //     if(theData.frequency==item.id){
-        //         frequency=item.title
-        //     }
-        //   })
         return (
           <div> 
                 <Modal

@@ -458,7 +458,7 @@ export default Form.create()(class LotteryForm extends React.Component {
                             >
                                 {!this.state.callResult?
                                     <Input  style={{width:200}}
-                                    placeholder="请输入概率值(0~1)"
+                                    placeholder="请输入概率值"
                                     onChange={(e)=>{
                                         this.setState({
                                             gl_val:e.target.value

@@ -354,7 +354,7 @@ export class Lottery extends React.Component {
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
                             pagination={this.state.pagination}
-                            scroll={{x:1000}}
+                            scroll={{x:1200}}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行

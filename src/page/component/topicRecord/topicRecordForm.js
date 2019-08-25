@@ -193,7 +193,7 @@ export default Form.create()(class TopicRecordForm extends React.Component {
                                 labelCol={{span:4}}
                                 label="话题分类"
                             >
-                                <span className="selMore">{dataTool.topicVal(theData.type)+' - '+frequency+' - '+dataTool.luckDrawTypeVal(theData.drawType)}</span>
+                                <span className="selMore">{dataTool.topicVal(theData.type)+' - '+theData.frequencyStatusValue+' - '+dataTool.luckDrawTypeVal(theData.drawType)}</span>
                             </Form.Item>
                         </div>
                         <div className="clearBoth"> 

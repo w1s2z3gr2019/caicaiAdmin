@@ -88,7 +88,7 @@ export class Index extends React.Component {
                 {
                     title: '创建时间',
                     dataIndex: 'createTimes',
-                    key: 'createTimes'
+                    key: 'createTimes',
                 },
                 {
                     title: '截止时间',
@@ -98,6 +98,7 @@ export class Index extends React.Component {
                 {
                     title: '话题状态',
                     dataIndex: 'status',
+                   
                     key: 'status',
                     render:text=>{
                         return dataTool.statusVal(text)
@@ -431,7 +432,7 @@ export class Index extends React.Component {
                             dataSource={this.state.dataSource}
                             rowSelection={rowSelection}
                             pagination={this.state.pagination}
-                            scroll={{x:1000}}
+                            scroll={{x:1200}}
                             onRow={record => {
                                 return {
                                   onClick: event => {this.tableRowClick(record)}, // 点击行
