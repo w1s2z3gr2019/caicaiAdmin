@@ -88,9 +88,11 @@ export class Login extends React.Component {
         return (
             <div className="wrap">
                 <div className="cludes">
+                   {/*
                     <div className="clude_one"></div>
                     <div className="clude_two"></div>
                     <div className="clude_three"></div>
+                   */}
                 </div>
                 <div className="wrapLogin">
                         <div className="login">
