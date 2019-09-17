@@ -231,7 +231,7 @@ export class Index extends React.Component {
     }
     callbackPass=(state)=>{
         this.setState({
-            theData:{},
+           // theData:{},
             visibleForm:false
         })
         if(state){
@@ -262,6 +262,8 @@ export class Index extends React.Component {
     }
     tableRowClick=(record, index) =>{
         this.setState({
+            visibleForm:false,
+            theData:record,
             selectedRowKeys: [record.key]
         });
     }
@@ -358,7 +360,6 @@ export class Index extends React.Component {
                     selectedRowKeys: selectedRowKeys.slice(-1)
                 });
             },
-
         };
         const hasSelected = this.state.selectedRowKeys.length > 0;
         const circelData = this.state.circelData||[];
@@ -425,7 +426,6 @@ export class Index extends React.Component {
                                 }
                             </Select>
                         </div>
-                        
                     </div>
                     <div className="patent-table">
                         <Table columns={columns}

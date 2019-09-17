@@ -110,9 +110,6 @@ export default Form.create()(class NamingForm extends React.Component {
                                     label="标题名称"
                                 >
                                     {getFieldDecorator('title', {
-                                        rules: [{
-                                            required: true, message: '请填写标题名称',
-                                        }],
                                         initialValue: theData.title
                                     })(
                                         <Input placeholder="标题名称" maxLength={50}/>

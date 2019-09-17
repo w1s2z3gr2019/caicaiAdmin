@@ -13,7 +13,6 @@ function uploadImg(s) {
     };
     myform.append('file', file);
     myform.append('sign', RichTextUploadSign);
-    console.log(RichTextUploadUrl)
     $.ajax({
         method: "post",
         dataType: "json",
@@ -46,7 +45,6 @@ export class Editors extends React.Component{
         super(props);
         this.state = {
             value: null,
-            theBool: true
         }
     }
     handleRichText=(value)=> {
@@ -56,18 +54,12 @@ export class Editors extends React.Component{
     componentWillMount() {
         RichTextUploadUrl = this.props.uploadUrl;
         RichTextUploadSign = this.props.uploadSign;
-        if(this.state.theBool){
-            this.state.value = this.props.textContent;
-        }
+        this.state.value = this.props.textContent;
     }
     componentWillReceiveProps(nextProps) {
-        if (this.state.theBool && nextProps.textContent) {
+        if(nextProps.textContent){
             this.state.value = nextProps.textContent;
             this.state.theBool = false;
-        }
-        if (this.props.visible && !nextProps.visible) {
-            this.state.theBool = true;
-            this.state.value = nextProps.textContent?nextProps.textContent:'';
         }
     }
     render() {

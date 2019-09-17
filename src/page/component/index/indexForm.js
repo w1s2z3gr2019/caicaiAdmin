@@ -19,6 +19,7 @@ export default Form.create()(class IndexForm extends React.Component {
         super(props);
        
         this.state={
+            theD:{content:''},
             keys:[],
             names:[],
             visible:false,
@@ -32,6 +33,7 @@ export default Form.create()(class IndexForm extends React.Component {
             prizeUrl:[],
             beginTime:endT,
             endTime:endT,
+            content:"",
         }
     }
     showModal = () => {
@@ -93,7 +95,6 @@ export default Form.create()(class IndexForm extends React.Component {
                     default:
                         break;
                 }
-                console.log(topicList)
                 let state =false;
                 topicList.map(item=>{
                     if(!item.content){
@@ -191,7 +192,6 @@ export default Form.create()(class IndexForm extends React.Component {
         if (keys.length === 1) {
           return;
         }
-    
         // can use data-binding to set
         form.setFieldsValue({
           keys: keys.filter(key => key !== k),
@@ -446,7 +446,6 @@ export default Form.create()(class IndexForm extends React.Component {
                     footer={null}
                     width='800px'
                     maskClosable={false}
-
                 >
                 <Form  layout="horizontal">
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
@@ -524,10 +523,10 @@ export default Form.create()(class IndexForm extends React.Component {
                                     label="类型配置"
                                     >
                                     <div className="left" style={{marginRight:10}}>
-                                        <span>甲方 - </span><Input placeholder="输入" style={{width:60}} value={this.state.leftVal} onChange={(e)=>{this.setState({leftVal:e.target.value})}}/>
+                                        <span>甲方 - </span><Input placeholder="输入" style={{width:100}} value={this.state.leftVal} onChange={(e)=>{this.setState({leftVal:e.target.value})}}/>
                                     </div>
                                     <div className="left">
-                                        <span>乙方 - </span><Input placeholder="输入" style={{width:60}} value={this.state.rightVal} onChange={(e)=>{this.setState({rightVal:e.target.value})}}/>
+                                        <span>乙方 - </span><Input placeholder="输入" style={{width:100}} value={this.state.rightVal} onChange={(e)=>{this.setState({rightVal:e.target.value})}}/>
                                     </div>
                                 </Form.Item>
                             </div>}
@@ -678,12 +677,13 @@ export default Form.create()(class IndexForm extends React.Component {
                                 </Form.Item>
                             </div>
                             <div className="clearBoth" style={{width:'100%',height:300}}>
-                                <Editors textContent={this.state.content} 
+                                <Editors textContent={this.state.content||''} 
                                     uploadUrl={window.url+'/api/admin/uploadPicture'}
                                     uploadSign={'cover_picture'}
-                                    handleRichText={(value) => { this.state.content = value; }}
-                                    visible={this.state.visible} />
-
+                                    handleRichText={(value) => { this.setState({
+                                        content:value
+                                    })}}
+                                    />
                             </div>
                             <div className="clearBoth">
                                 <Form.Item  
