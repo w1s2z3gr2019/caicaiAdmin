@@ -52,15 +52,18 @@ export default Form.create()(class IndexForm extends React.Component {
         if(urlState) return;
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                if(!this.state.pictureUrl.length){
-                    message.warning('请上传话题图片')
+                if(!this.state.title){
+                    message.warning('请输入话题名称')
                     return;
                 }
                 if(!this.state.pictureUrl.length){
                     message.warning('请上传话题图片')
                     return;
                 }
-               
+                if(!this.state.prizeDescription){
+                    message.warning('请输入奖品名称')
+                    return;
+                }
                 let topicList1=[],topicList2=[],topicList3=[],keyArr=[];
                 if(this.state.drawType==2&&values.keys.length){
                     values.names.map(item=>{
@@ -135,7 +138,7 @@ export default Form.create()(class IndexForm extends React.Component {
                         type:this.state.type,
                         frequency:this.state.frequency,
                         drawType:this.state.drawType,
-                        title:values.title,
+                        title:this.state.title,
                         releaseWechat:this.state.releaseWechat,
                         releaseName:this.state.releaseName,
                         content:this.state.content,
@@ -143,7 +146,7 @@ export default Form.create()(class IndexForm extends React.Component {
                         prizeUrl:this.state.prizeUrl.length&&this.state.prizeUrl.join(','),
                         sponsorshipType:this.state.sponsorshipType,
                         sponsor:this.state.sponsorshipType?this.state.sponsor:null,
-                        prizeDescription:values.prizeDescription,
+                        prizeDescription:this.state.prizeDescription,
                         appUrl:this.state.appUrl,
                         publicUrl:this.state.publicUrl,
                         status:status,
@@ -270,7 +273,9 @@ export default Form.create()(class IndexForm extends React.Component {
                     appUrl:'',
                     beginTime:endT,
                     endTime:endT,
-                    publicUrl:''
+                    publicUrl:'',
+                    prizeDescription:'',
+                    title:''
                 });
                 this.props.form.resetFields();
             }else{
@@ -302,7 +307,9 @@ export default Form.create()(class IndexForm extends React.Component {
                     endTime:theD.endTimes||dataTool.nowTime(),
                     appUrl:theD.appUrl,
                     topicList:theD.topicList,
-                    publicUrl:theD.publicUrl
+                    publicUrl:theD.publicUrl,
+                    prizeDescription:theD.prizeDescription,
+                    title:theD.title
                 });
             }
             this.setState({
@@ -489,16 +496,9 @@ export default Form.create()(class IndexForm extends React.Component {
                                 <Form.Item
                                     wrapperCol={{span:18}}
                                     labelCol={{span:4}}
-                                    label="活动标题"
-                                >
-                                    {getFieldDecorator('title', {
-                                        rules: [{
-                                            required: true, message: '请填写活动标题',
-                                        }],
-                                        initialValue: theData.title
-                                    })(
-                                        <Input style={{width:'80%'}} placeholder="活动标题" maxLength={500}/>
-                                    )}
+                                    label={<span><span style={{color:'#f00',fontSize:16,marginRight:5}}>*</span>活动标题</span>}
+                                > 
+                                    <Input value={this.state.title} onChange={(e)=>{this.setState({title:e.target.value})}} style={{width:'80%'}} placeholder="活动标题" maxLength={500}/>
                                 </Form.Item>
                             </div>
                             <div className="clearBoth">
@@ -543,16 +543,9 @@ export default Form.create()(class IndexForm extends React.Component {
                                 <Form.Item
                                     wrapperCol={{span:18}}
                                     labelCol={{span:4}}
-                                    label="奖品名称"
+                                    label={<span><span style={{color:'#f00',fontSize:16,marginRight:5}}>*</span>奖品名称</span>}
                                 >
-                                    {getFieldDecorator('prizeDescription', {
-                                        rules: [{
-                                            required: true, message: '请填写奖品名称',
-                                        }],
-                                        initialValue: theData.prizeDescription
-                                    })(
-                                        <Input style={{width:240}} placeholder="奖品名称" maxLength={500}/>
-                                    )}
+                                    <Input value={this.state.prizeDescription} onChange={(e)=>{this.setState({prizeDescription:e.target.value})}} style={{width:240}} placeholder="奖品名称" maxLength={500}/>
                                 </Form.Item>
                             </div>
                             <div className="clearBoth"> 
