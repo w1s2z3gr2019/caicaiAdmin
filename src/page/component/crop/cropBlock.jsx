@@ -3,12 +3,13 @@ import React, {
 } from 'react';
 import CropBox from './cropBox.jsx';
 import './crop.css';
-import {Button} from 'antd'
+import {Button,Icon,Modal} from 'antd';
 
 class CropBlock extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			srcImg:'',
 			urlArr: this.props.urlArr ? this.props.urlArr : [],
 			number: this.props.number ? this.props.number : '',
 			uploadData: this.props.uploadData ? this.props.uploadData : {},
@@ -79,14 +80,18 @@ class CropBlock extends Component {
 	}
 	render() {
 		let imgList = this.state.urlArr.map((src, index) =>
-			<div key = {index} className="crop-img-block">
-				<img alt = "图片" className = "crop-img" title = "删除" src = {window.imgApi+src} onClick = {this.delImg.bind(this, index)} />
+			<div key = {index} className="crop-img-block">	
+				<div className="eyeIcon">
+					<Icon type="eye" title="预览" onClick={()=>{this.setState({visibleImg:true,srcImg:src})}}/>
+					<Icon type="delete" title="删除"  onClick = {this.delImg.bind(this, index)}/>
+				</div>
+				<img alt = "图片" className = "crop-img" title = "删除" src = {window.imgApi+src}  />
 			</div>
 		)
 		return (
 			<div className = "crop-block">
 			   {imgList}
-				<Button type="primary" className="crop-add-img" onClick = {this.addImg}>添加图片</Button>
+				{!this.state.urlArr.length&&<Button type="primary" className="crop-add-img" onClick = {this.addImg}>添加图片</Button>}
 				<CropBox 
 					idValue={this.props.idValue} 
 					getUrl = {this.getUrl} 
@@ -95,6 +100,16 @@ class CropBlock extends Component {
 					url = {this.state.url} 
 					callbackPass={this.callbackPass}
 					visible = {this.state.visible}/>
+				<Modal
+					title='图片预览'
+					visible={this.state.visibleImg}
+					onOk={(e)=>{this.setState({visibleImg:false})}}
+					onCancel={(e)=>{this.setState({visibleImg:false})}}
+					footer={null}
+					width='600px'
+				>
+					<img style={{width:'100%'}} src={window.imgApi+this.state.srcImg} alt="" />
+				</Modal>	
 			</div>
 		)
 	}

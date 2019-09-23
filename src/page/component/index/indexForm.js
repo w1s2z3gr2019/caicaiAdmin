@@ -454,7 +454,7 @@ export default Form.create()(class IndexForm extends React.Component {
                     width='800px'
                     maskClosable={false}
                 >
-                <Form  layout="horizontal">
+                <Form  layout="horizontal" onSubmit={(e)=>{}}>
                     <Spin tip="正在保存,请稍候..." spinning={this.state.loading}>
                             {this.props.data&&(!this.props.data.status||this.props.data.status=='0'||this.props.data.status=='4')?<div><div className="clearBoth"> 
                                 <Form.Item 

@@ -155,13 +155,13 @@ class CropBox extends Component {
 					<div className="crop-box-content">
 						<div className="crop-area">
 							<Cropper key = {this.state.src}
-											style={{ height: 300, width: 400 }}
-											aspectRatio = {this.state.aspectRatio}
-											preview = ".img-preview"
-											guides={true}
-											src={this.state.src}
-											ref={cropper => { this.cropper = cropper; }}
-									/>
+								style={{ height: 400, width: 600 }}
+								aspectRatio = {this.state.aspectRatio}
+								preview = ".img-preview"
+								guides={true}
+								src={this.state.src}
+								ref={cropper => { this.cropper = cropper; }}
+							/>
 						</div>
 						<Divider />
 						<div className="crop-input">	

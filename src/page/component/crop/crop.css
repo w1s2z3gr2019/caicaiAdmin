@@ -7,11 +7,41 @@
 	left: -200px;
 	visibility: hidden;
 }
-.crop-img{
+.crop-img-block{
 	width: 200px;
 	height: 100px;
+	position: relative;
+}
+.crop-add-img{
+	float: left;
+}
+.crop-img{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	border: 1px solid #ccc;
 	padding: 4px;
+	border-radius: 4px;
+	z-index: 10;
+}
+.eyeIcon:hover{
+	background: rgba(0,0,0,.2)
+}
+.eyeIcon{
+	text-align: center;
+	position: absolute;
+	z-index: 11;
+	width: 100%;
+	height: 100%;
+}
+.eyeIcon i{
+	font-size: 16px;
+	margin: 0 5px;
+	color: #fff;
+	cursor: pointer;
+	line-height: 100px
 }
 .crop-box-content{
 	text-align: center;
